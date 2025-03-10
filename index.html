@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <h2>Dashboard</h2>
+                <!-- Gender Selection -->
+            <div class="gender-selection">
+                <label><input type="radio" name="startedgender" value="male"> Male</label>
+                <label><input type="radio" name="startedgender" value="female"> Female</label>
+            </div>
+            <ul>
+                <li data-section="student">Student</li>
+                <li data-section="studentsList">All students</li>
+                <li data-section="faculty">Faculty</li>
+                <li data-section="facultyList">All faculties</li>
+                <li data-section="go">Go</li>
+                <li data-section="leave">Leave</li>
+                <li data-section="statistics">Statistics</li>
+            </ul>
+        </aside>
+        
+        
+        <main class="content">
+            <section id="student" class="section">
+                <h2>Student Management</h2>
+                <form id="studentForm">
+                    <input type="text" placeholder="Name" id="name" required>
+                    <input type="number" placeholder="Age" id="age" required>
+                    <input type="text" placeholder="Sequence Number" id="seqNumber" required>
+                    <select id="faculty_id" required>
+                        <option value="">Select Faculty</option>
+                    </select>
+                    <label>Male</label>
+                    <input type="radio" value="male" name="gender">
+                    <label>Female</label>
+                    <input type="radio" value="female" name="gender">
+                    <video id="camera" autoplay></video>
+                    <canvas id="photoCanvas"></canvas>
+                    <button type="button" onclick="capturePhoto()">Capture Photo</button>
+
+                    <button type="button" id="submitUserForm">Save</button>
+                </form>
+            </section>
+            <section id="studentsList" class="section">
+                <h2>All Students</h2>
+                    <!-- Filters Section -->
+                <div class="filters">
+                    <input type="text" id="filterByName" placeholder="Filter by Name">
+                    <input type="number" id="filterBySequence" placeholder="Filter by Sequence Number">
+                    <input type="text" id="filterByFaculty" placeholder="Filter by Faculty">
+
+                    <button onclick="clearFilters()">Clear Filters</button>
+                </div>
+                <table id="studentsTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Age</th>
+                            <th>Sequence Number</th>
+                            <th>Faculty ID</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Student rows will be inserted here dynamically -->
+                    </tbody>
+                </table>
+                <div id="editUserForm" style="display: none; position: absolute; top: 50px; left: 50%; transform: translateX(-50%); background: white; padding: 20px; box-shadow: 0px 0px 10px rgba(0,0,0,0.3) ; padding-right: 37px">
+                    <h2>Edit User</h2>
+                    <input type="hidden" id="editUserId">
+                    <label>Name:</label>
+                    <input type="text" id="editName">
+                    <label>Age:</label>
+                    <input type="number" id="editAge">
+                    <label>Sequence Number:</label>
+                    <input type="number" id="editSequence">
+                    <button onclick="updateUser()">Save</button>
+                    <button onclick="closeEditForm()">Cancel</button>
+                </div>
+            </section>
+            <section id="faculty" class="section">
+                <h2>Faculty Management</h2>
+                <form id="facultyForm">
+                    <input type="text" placeholder="Name" id="facultyName" required>
+                    <button type="submit">Save</button>
+                </form>
+            </section>
+            <section id="facultyList" class="section">
+                <h2>Faculty List</h2>
+                <table id="facultyTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Faculty data will be inserted here dynamically -->
+                    </tbody>
+                </table>
+            </section>
+            <section id="go" class="section">
+                <h2>Go - QR Scanner</h2>
+                <div class="scanner-container">
+                    <!-- QR Scanner Video -->
+                    <video id="qrScanner" autoplay></video>
+                    <div class="user-card">
+                        <h3>User Information</h3>
+                        <div id="userData">
+                            <p><strong>ID:</strong> <span id=userId>-</span></p>
+                            <p><strong>Name:</strong> <span id="userName">-</span></p>
+                            <p><strong>Age:</strong> <span id="userAge">-</span></p>
+                            <p><strong>Faculty:</strong> <span id="userFaculty">-</span></p>
+                        </div>
+                        <div id="profileImage">
+                            <img src='../MilitaryService/attendance_system-master/attendance_system-master/StudentsImages/12.jpg'>
+                        </div>
+                        <button onclick="approve()" disabled id="approveBtn">Accept</button>
+                        <button onclick="reject()" disabled id="rejectBtn">Reject</button>
+                    </div>
+                </div>
+                <button onclick="startScanner()">Start Scanner</button>
+            </section>
+            
+            <section id="leave" class="section">
+                <h2>Leave - QR Scanner</h2>
+                <video id="qrScannerLeave" autoplay></video>
+                <button onclick="startScannerLeave()">Start Scanner</button>
+                <div id="userDataLeave"></div>
+                <button onclick="approveLeave()" disabled id="approveBtnLeave">Accept</button>
+                <button onclick="rejectLeave()" disabled id="rejectBtnLeave">Reject</button>
+            </section>     
+            
+            
+        </main>
+    </div>
+    <script src="script.js"></script>
+    <script src="jsQR.js"></script>
+
+</body>
+</html>

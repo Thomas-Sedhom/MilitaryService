@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        img {
+            width: 200px;
+            height: 200px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        input, button {
+            margin-top: 10px;
+            padding: 8px;
+            font-size: 16px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Student Details</h2>
+        <input type="number" id="studentId" placeholder="Enter Student ID">
+        <button onclick="fetchStudent()">Get Student</button>
+
+        <div id="studentInfo" class="hidden">
+            <h3 id="studentName"></h3>
+            <p id="studentAge"></p>
+            <p id="studentFaculty"></p>
+            <p id="studentSeq"></p>
+            <p id="studentGender"></p>
+            <img id="studentPhoto" alt="Student Photo">
+        </div>
+        <p id="errorMessage" style="color: red;"></p>
+    </div>
+
+    <script>
+        async function fetchStudent() {
+            const studentId = document.getElementById("studentId").value;
+            const studentInfo = document.getElementById("studentInfo");
+            const errorMessage = document.getElementById("errorMessage");
+            const studentPhoto = document.getElementById("studentPhoto");
+
+            if (!studentId) {
+                errorMessage.textContent = "Please enter a valid Student ID";
+                studentInfo.classList.add("hidden");
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/students/${studentId}`);
+                if (!response.ok) {
+                    throw new Error("Student not found!");
+                }
+
+                const data = await response.json();
+
+                document.getElementById("studentName").textContent = `Name: ${data.name}`;
+                document.getElementById("studentAge").textContent = `Age: ${data.age}`;
+                document.getElementById("studentFaculty").textContent = `Faculty ID: ${data.faculty_id}`;
+                document.getElementById("studentSeq").textContent = `Sequence Number: ${data.seq_number}`;
+                document.getElementById("studentGender").textContent = `Gender: ${data.is_male ? "Male" : "Female"}`;
+
+                studentPhoto.src = `data:image/png;base64,${data.photo}`;
+                studentPhoto.style.display = "block";
+
+                studentInfo.classList.remove("hidden");
+                errorMessage.textContent = "";
+            } catch (error) {
+                errorMessage.textContent = error.message;
+                studentInfo.classList.add("hidden");
+            }
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Attendance Statistics</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        /* Student Card Styling */
+        .student-card {
+            background: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            margin: auto;
+            margin-bottom: 20px;
+        }
+
+        .student-card img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .student-info {
+            line-height: 1.6;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .attendance-checkbox {
+            width: 18px;
+            height: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Student Attendance Statistics</h2>
+
+    <!-- Student Card -->
+    <div class="student-card" id="studentCard">
+        <img id="studentImage" src="" alt="Student Image">
+        <div class="student-info">
+            <p><strong>ID:</strong> <span id="studentId"></span></p>
+            <p><strong>Name:</strong> <span id="studentName"></span></p>
+            <p><strong>Age:</strong> <span id="studentAge"></span></p>
+            <p><strong>Faculty:</strong> <span id="studentFaculty"></span></p>
+            <p><strong>Gender:</strong> <span id="studentGender"></span></p>
+        </div>
+    </div>
+
+    <!-- Attendance Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th>Attendance Time</th>
+                <th>Go Time</th>
+                <th>Present</th>
+                <th>Notice</th>
+            </tr>
+        </thead>
+        <tbody id="attendanceTableBody">
+            <!-- Data will be inserted dynamically -->
+        </tbody>
+    </table>
+
+    <script>
+        // Sample student data (Replace with real data from your backend)
+        const student = {
+            id: "001",
+            name: "Alice Johnson",
+            age: 22,
+            faculty: "Computer Science",
+            image: "https://randomuser.me/api/portraits/women/44.jpg",
+            gender: "Female",
+            attendance: [
+                { day: "Day 1", timeIn: "08:30 AM", timeOut: "03:00 PM", present: true, notice: "On time" },
+                { day: "Day 2", timeIn: "08:35 AM", timeOut: "03:10 PM", present: true, notice: "Late 5 min" },
+                { day: "Day 3", timeIn: "09:00 AM", timeOut: "03:20 PM", present: false, notice: "Absent" },
+                { day: "Day 4", timeIn: "08:25 AM", timeOut: "03:05 PM", present: true, notice: "On time" },
+                { day: "Day 5", timeIn: "08:40 AM", timeOut: "03:15 PM", present: true, notice: "Late 10 min" },
+                { day: "Day 6", timeIn: "08:32 AM", timeOut: "03:00 PM", present: true, notice: "On time" },
+                { day: "Day 7", timeIn: "08:50 AM", timeOut: "03:30 PM", present: true, notice: "Late 20 min" },
+                { day: "Day 8", timeIn: "09:10 AM", timeOut: "03:40 PM", present: false, notice: "Absent" },
+                { day: "Day 9", timeIn: "08:20 AM", timeOut: "03:00 PM", present: true, notice: "On time" },
+                { day: "Day 10", timeIn: "08:45 AM", timeOut: "03:20 PM", present: true, notice: "Late 15 min" },
+                { day: "Day 11", timeIn: "08:55 AM", timeOut: "03:35 PM", present: true, notice: "Late 25 min" },
+                { day: "Day 12", timeIn: "09:15 AM", timeOut: "03:45 PM", present: false, notice: "Absent" },
+                { day: "Day 13", timeIn: "08:30 AM", timeOut: "03:05 PM", present: true, notice: "On time" },
+                { day: "Day 14", timeIn: "08:42 AM", timeOut: "03:12 PM", present: true, notice: "Late 7 min" }
+            ]
+        };
+
+        function loadStudentData() {
+            // Fill student card details
+            document.getElementById("studentId").textContent = student.id;
+            document.getElementById("studentName").textContent = student.name;
+            document.getElementById("studentAge").textContent = student.age;
+            document.getElementById("studentFaculty").textContent = student.faculty;
+            document.getElementById("studentGender").textContent = student.gender;
+            document.getElementById("studentImage").src = student.image;
+
+            // Fill attendance table
+            const tableBody = document.getElementById("attendanceTableBody");
+            student.attendance.forEach(record => {
+                let row = `<tr>
+                    <td>${record.day}</td>
+                    <td>${record.timeIn}</td>
+                    <td>${record.timeOut}</td>
+                    <td><input type="checkbox" class="attendance-checkbox" ${record.present ? "checked" : ""} disabled></td>
+                    <td>${record.notice}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        // Load data on page load
+        document.addEventListener("DOMContentLoaded", loadStudentData);
+    </script>
+
+</body>
+</html>
