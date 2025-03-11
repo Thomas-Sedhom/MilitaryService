@@ -21,9 +21,9 @@ async function loadFaculties() {
     }
 }
 
-async function fetchFacultyReport(facultyId, isMale) {
+async function fetchFacultyReport(facultyId, isMale,date) {
     // Construct the URL with parameters
-    const url = `http://127.0.0.1:8000/reports/faculty_report/${facultyId}?is_male=${isMale}`;
+    const url = `http://127.0.0.1:8000/reports/faculty_report/${facultyId}?is_male=${isMale}&start_date=${date}`;
 
     try {
         // Make the GET request
@@ -63,9 +63,10 @@ async function fetchFacultyReport(facultyId, isMale) {
     }
 }
 
-async function downloadGeneralReport(isMale) {
+async function downloadGeneralReport(isMale , date) {
     try {
-        const url = `http://127.0.0.1:8000/reports/general_report?is_male=${isMale}`;
+        console.log(date, isMale);
+        const url = `http://127.0.0.1:8000/reports/general_report?is_male=${isMale}&start_date=${date}`;
 
         const response = await fetch(url, {
             method: "GET",

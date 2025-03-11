@@ -196,8 +196,7 @@ let approveBtn = document.getElementById("approveBtn");
 let scanning = false;
 
 async function startScanner() {
-    if (scanning) return; // Prevent multiple calls
-    scanning = true;
+    // if (scanning) return; // Prevent multiple calls
 
     // Access Camera
     try {
@@ -213,8 +212,9 @@ async function startScanner() {
     }
 }
 
-async function scanFrame() {
-    if (!scanning) return;
+ function scanFrame() {
+    // if (!scanning) return;
+    // scanning = true;
 
     const video = document.getElementById("qrScanner");
     const canvas = document.createElement("canvas");

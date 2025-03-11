@@ -35,14 +35,14 @@ document.addEventListener("DOMContentLoaded", async function () {
       facultyLabel.style.display = "none";
     } else if (selectedValue === 1) {
       // Faculty Report → Show Faculty, Hide Date
-      reportDateInput.style.display = "none";
-      reportDateLabel.style.display = "none";
+      reportDateInput.style.display = "block";
+      reportDateLabel.style.display = "block";
       facultySelect.style.display = "block";
       facultyLabel.style.display = "block";
     } else if (selectedValue === 2) {
       // General Report → Hide both
-      reportDateInput.style.display = "none";
-      reportDateLabel.style.display = "none";
+      reportDateInput.style.display = "block";
+      reportDateLabel.style.display = "block";
       facultySelect.style.display = "none";
       facultyLabel.style.display = "none";
     } else {
@@ -74,9 +74,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         alert("الرجاء اختيار الكلية والنوع لتقرير الكلية.");
         return;
       }
-      await fetchFacultyReport(faculty, gender);
+      await fetchFacultyReport(faculty, gender,reportdate);
     } else if (reporttype === "2") {
-      await downloadGeneralReport(gender);
+      await downloadGeneralReport(gender,reportdate);
     } else {
       await fetchQRCodeReport(gender);
     }
