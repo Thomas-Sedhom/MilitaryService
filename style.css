@@ -206,6 +206,7 @@ button:last-child {
     align-items: flex-start; /* Align items to top */
 }
 
+
 .camera-box {
     flex: 1;
 }
@@ -321,4 +322,76 @@ button {
 } 
 .sidebar label input{
     width: 20px;
+}
+
+#go .scanner-container {
+    display: flex;
+    gap: 10px; /* Space between elements */
+    justify-content: space-around;
+    align-items: flex-start; /* Align items to top */
+}
+
+#go video {
+    width: 77% !important;
+    height: auto !important;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+#go .user-card {
+    flex: 1;
+    width: 600px;
+    max-width: 1000px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+#go input{
+    width: 96%;
+}
+#go textarea{
+    display: block;
+    width: 90%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+#leave .scanner-container {
+    display: flex;
+    gap: 10px; /* Space between elements */
+    justify-content: space-around;
+    align-items: flex-start; /* Align items to top */
+}
+
+#leave .user-card {
+    flex: 1;
+    width: 600px;
+    max-width: 1000px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#leave input {
+    width: 96%;
+}
+
+#leave video {
+    width: 77%;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+
+#leave textarea{
+    display: block;
+    width: 90%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
 }

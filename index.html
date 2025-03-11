@@ -11,10 +11,10 @@
         <aside class="sidebar">
             <h2>Dashboard</h2>
                 <!-- Gender Selection -->
-            <div class="gender-selection">
+            <!-- <div class="gender-selection">
                 <label><input type="radio" name="startedgender" value="male"> Male</label>
                 <label><input type="radio" name="startedgender" value="female"> Female</label>
-            </div>
+            </div> -->
             <ul>
                 <li data-section="student">Student</li>
                 <li data-section="studentsList">All students</li>
@@ -22,7 +22,8 @@
                 <li data-section="facultyList">All faculties</li>
                 <li data-section="go">Go</li>
                 <li data-section="leave">Leave</li>
-                <li data-section="statistics">Statistics</li>
+                <li data-section="bulkUploadSection">Bulk Upload</li>
+                <li data-section="reports">ٌReports</li>
             </ul>
         </aside>
         
@@ -32,8 +33,10 @@
                 <h2>Student Management</h2>
                 <form id="studentForm">
                     <input type="text" placeholder="Name" id="name" required>
-                    <input type="number" placeholder="Age" id="age" required>
+                    <input type="number" placeholder="phone_number" id="phone_number" required>
+                    <input type="number" placeholder="grade" id="grade" required>
                     <input type="text" placeholder="Sequence Number" id="seqNumber" required>
+                    <input type="text" placeholder="National ID" id="national_id" required>
                     <select id="faculty_id" required>
                         <option value="">Select Faculty</option>
                     </select>
@@ -62,10 +65,10 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Email</th>
-                            <th>Age</th>
+                            <th>grade</th>
                             <th>Sequence Number</th>
-                            <th>Faculty ID</th>
+                            <th>Faculty</th>
+                            <th>Notes</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -78,10 +81,12 @@
                     <input type="hidden" id="editUserId">
                     <label>Name:</label>
                     <input type="text" id="editName">
-                    <label>Age:</label>
-                    <input type="number" id="editAge">
+                    <label>Grade:</label>
+                    <input type="text" id="editGrade">
                     <label>Sequence Number:</label>
-                    <input type="number" id="editSequence">
+                    <input type="text" id="editSequence">
+                    <label>Notes:</label>
+                    <input type="text" id="editNotes">
                     <button onclick="updateUser()">Save</button>
                     <button onclick="closeEditForm()">Cancel</button>
                 </div>
@@ -90,7 +95,7 @@
                 <h2>Faculty Management</h2>
                 <form id="facultyForm">
                     <input type="text" placeholder="Name" id="facultyName" required>
-                    <button type="submit">Save</button>
+                    <button type="button" id="saveFaculty">Save</button>
                 </form>
             </section>
             <section id="facultyList" class="section">
@@ -112,38 +117,115 @@
                 <h2>Go - QR Scanner</h2>
                 <div class="scanner-container">
                     <!-- QR Scanner Video -->
-                    <video id="qrScanner" autoplay></video>
-                    <div class="user-card">
-                        <h3>User Information</h3>
-                        <div id="userData">
-                            <p><strong>ID:</strong> <span id=userId>-</span></p>
-                            <p><strong>Name:</strong> <span id="userName">-</span></p>
-                            <p><strong>Age:</strong> <span id="userAge">-</span></p>
-                            <p><strong>Faculty:</strong> <span id="userFaculty">-</span></p>
-                        </div>
-                        <div id="profileImage">
-                            <img src='../MilitaryService/attendance_system-master/attendance_system-master/StudentsImages/12.jpg'>
-                        </div>
-                        <button onclick="approve()" disabled id="approveBtn">Accept</button>
-                        <button onclick="reject()" disabled id="rejectBtn">Reject</button>
+                    <div class="cont">
+                        <video id="qrScanner" autoplay></video>
                     </div>
+                    <div class="cont">
+                        <div class="user-card">
+                            <h3>User Information</h3>
+                            <div class="user-info">
+                                <img id="userImage" src="" alt="User Image">
+                                <div class="info-text">
+                                    <p><strong>ID:</strong> <span id="userId">-</span></p>
+                                    <p><strong>Name:</strong> <span id="userName">-</span></p>
+                                    <p><strong>Grade:</strong> <span id="userGrade">-</span></p>
+                                    <p><strong>Faculty:</strong> <span id="userFaculty">-</span></p>
+                                    <p><strong>Sequence Number:</strong> <span id="userSeq">-</span></p>
+                                </div>
+                            </div>
+                            <label for="notice">Notice:</label>
+                            <textarea id="notice" placeholder="Enter notice..." rows="4"></textarea>                            
+                            <div class="btn-group">
+                                <button onclick="approve()" disabled id="approveBtn">Accept</button>
+                            </div>
+                        </div>
+                    </div>                    
                 </div>
-                <button onclick="startScanner()">Start Scanner</button>
             </section>
             
             <section id="leave" class="section">
                 <h2>Leave - QR Scanner</h2>
-                <video id="qrScannerLeave" autoplay></video>
-                <button onclick="startScannerLeave()">Start Scanner</button>
-                <div id="userDataLeave"></div>
-                <button onclick="approveLeave()" disabled id="approveBtnLeave">Accept</button>
-                <button onclick="rejectLeave()" disabled id="rejectBtnLeave">Reject</button>
-            </section>     
+                <div class="scanner-container">
+                    <!-- QR Scanner Video -->
+                    <div class="cont">
+                        <video id="qrScannerLeave" autoplay></video>
+                    </div>
+                    <div class="cont">
+                        <div class="user-card">
+                            <h3>User Information</h3>
+                            <div class="user-info">
+                                <img id="userImageLeave" src="" alt="User Image">
+                                <div class="info-text">
+                                    <p><strong>ID:</strong> <span id="userIdLeave">-</span></p>
+                                    <p><strong>Name:</strong> <span id="userNameLeave">-</span></p>
+                                    <p><strong>Grade:</strong> <span id="userGradeLeave">-</span></p>
+                                    <p><strong>Faculty:</strong> <span id="userFacultyLeave">-</span></p>
+                                    <p><strong>Sequence Number:</strong> <span id="userSeqLeave">-</span></p>
+                                </div>
+                            </div>
+                            <label for="noticeLeave">Notice:</label>
+                            <textarea id="noticeLeave" placeholder="Enter notice..." rows="4"></textarea>                            
+                            <div class="btn-group">
+                                <button onclick="approveLeave()" disabled id="approveBtnLeave">Accept</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>  
+            <section id="bulkUploadSection" class="section">
+                <h3>Upload Excel File</h3>
+                
+                <form id="bulkUploadForm">
+                    <!-- File Input -->
+                    <label for="filePath">File Path:</label>
+                    <input type="text" id="filePath" placeholder="Enter full file path...">
+                    
+                    <!-- Faculty Dropdown -->
+                    <label for="sheetFacultyId">Select Faculty:</label>
+                    <select id="sheetFacultyId" required>
+                        <option value="">Loading faculties...</option>
+                    </select>
             
+                    <!-- Gender Selection -->
+                    <label for="gender">Select Gender:</label>
+                    <select id="gender" required>
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
             
+                    <button type="submit">Upload</button>
+                </form>
+            </section>
+            <section id="reports" class="section">
+                <h3>Export reports</h3>
+                
+                <form id="bulkUploadForm">
+                    <!-- File Input -->
+                    <!-- <label for="filePath">Choose folder:</label>
+                    <input type="file" id="filePath" webkitdirectory directory>
+                    
+                    -->
+                    <!-- Faculty Dropdown -->
+                    <label for="reportsFacultyId">Select Faculty:</label>
+                    <select id="reportsFacultyId" required>
+                        <option value="">Loading faculties...</option>
+                    </select>
+            
+                    <!-- Gender Selection -->
+                    <label for="gender">Select Gender:</label>
+                    <select id="gender" required>
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+            
+                    <button id="saveFile">Save File</button>
+                </form>
+            </section>
         </main>
     </div>
-    <script src="script.js"></script>
+    <script src="script.js " defer></script>
     <script src="jsQR.js"></script>
 
 </body>

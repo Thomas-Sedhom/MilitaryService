@@ -25,12 +25,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.querySelectorAll("#studentsTable tbody tr").forEach(row => {
             const name = row.children[0].textContent.toLowerCase();
-            const sequence = row.children[3].textContent;
-            const faculty = row.children[4].textContent;
+            const sequence = row.children[2].textContent;
+            const faculty = row.children[3].textContent;
 
             const matchesName = name.includes(nameValue);
+            console.log(sequenceValue)
             const matchesSequence = sequenceValue === "" || sequence.includes(sequenceValue);
-            const matchesFaculty = facultyValue === "" || faculty === facultyValue;
+            const matchesFaculty = facultyValue === "" || faculty.includes(facultyValue);
 
             row.style.display = matchesName && matchesSequence && matchesFaculty ? "" : "none";
         });
@@ -48,6 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
     filterByFaculty.addEventListener("input", filterStudents);
 });
 //--------------------------------------------------------------------------------------------
+// load current section
 document.addEventListener("DOMContentLoaded", function () {
     const sections = document.querySelectorAll(".section");
     const sidebarItems = document.querySelectorAll(".sidebar ul li");
@@ -84,6 +86,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
     });
 });
+//-------------------------------------------------------------------------------------------------
+// create image file 
 function dataURLToFile(dataUrl, fileName) {
     let arr = dataUrl.split(","), 
         mime = arr[0].match(/:(.*?);/)[1],
@@ -97,20 +101,18 @@ function dataURLToFile(dataUrl, fileName) {
 
     return new File([u8arr], fileName, { type: mime });
 }
+//-------------------------------------------------------------------------------------------------
 
-document.querySelectorAll("button").forEach(button => {
-    button.addEventListener("click", function(event) {
-        event.preventDefault();
-    });
-});
 document.getElementById("submitUserForm").addEventListener("click", async function (event) {
     event.preventDefault(); // Prevent default form submission
 
     // Get input values
     const name = document.getElementById("name").value;
-    const age = document.getElementById("age").value;
+    const phone_number = document.getElementById("phone_number").value;
+    const grade = document.getElementById("grade").value;
     const seqNumber = document.getElementById("seqNumber").value;
     const facultyId = document.getElementById("faculty_id").value;
+    const national_id = document.getElementById("national_id").value;
 
     let gender = document.querySelector('input[name="gender"]:checked').value;
 
@@ -119,14 +121,6 @@ document.getElementById("submitUserForm").addEventListener("click", async functi
     console.log(photoBase64); // ✅ Now it will not be undefined
 
     const photoFile = dataURLToFile(photoBase64, "photo.png");
-
-    // Create JSON object
-    const studentData = {
-        name,
-        age,
-        seqNumber,
-        faculty_id,
-    };
 
     try {
         if(gender == 'male'){
@@ -137,9 +131,17 @@ document.getElementById("submitUserForm").addEventListener("click", async functi
             console.log(gender);
         }
         const formData = new FormData();
-        formData.append("photo", photoFile); // ✅ Append the file correctly
-        console.log(name)
-        const response = await fetch(`http://127.0.0.1:8000/students/?name=${name}&age=${age}&seqNumber=${seqNumber}&faculty_id=${facultyId}&is_male=${gender}`, {
+        formData.append("photo", photoFile); 
+        formData.append("name", name);
+        formData.append("grade", grade); 
+        formData.append("phone_number", phone_number);
+        formData.append("faculty_id", facultyId);
+        formData.append("is_male", gender); 
+        formData.append("photo", photoFile); 
+        formData.append("seq_number", seqNumber); 
+        formData.append("national_id", national_id); 
+
+        const response = await fetch(`http://127.0.0.1:8000/students/`, {
             method: "POST",
             body:formData,
             credentials: 'include'
@@ -155,10 +157,9 @@ document.getElementById("submitUserForm").addEventListener("click", async functi
         alert("Failed to save student.");
     }
 });
-
-document.getElementById("facultyForm").addEventListener("submit", async function (event) {
+document.getElementById("saveFaculty").addEventListener("click", async function (event) {
     event.preventDefault(); // Prevent default form submission
-
+    console.log(11)
     const facultyName = document.getElementById("facultyName").value;
     try {
         const response = await fetch(`http://127.0.0.1:8000/faculties/`, {
@@ -181,8 +182,6 @@ document.getElementById("facultyForm").addEventListener("submit", async function
     }
 });
 
-
-
 function capturePhoto() {
     let video = document.getElementById('camera');
     let canvas = document.getElementById('photoCanvas');
@@ -194,49 +193,55 @@ function capturePhoto() {
 let video = document.getElementById("qrScanner");
 let userDataDiv = document.getElementById("userData");
 let approveBtn = document.getElementById("approveBtn");
-let rejectBtn = document.getElementById("rejectBtn");
 let scanning = false;
 
 async function startScanner() {
+    if (scanning) return; // Prevent multiple calls
     scanning = true;
-    // userDataDiv.innerText = "Scanning...";
-    approveBtn.disabled = true;
-    rejectBtn.disabled = true;
 
     // Access Camera
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-    video.srcObject = stream;
+    try {
+        const video = document.getElementById("qrScanner");
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        video.srcObject = stream;
 
-    // Start scanning process
-    scanFrame();
+        video.onloadedmetadata = () => {
+            scanFrame(); // Start scanning once video is ready
+        };
+    } catch (error) {
+        console.error("Camera access error:", error);
+    }
 }
 
 async function scanFrame() {
+    if (!scanning) return;
+
     const video = document.getElementById("qrScanner");
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
     if (video.readyState !== video.HAVE_ENOUGH_DATA) {
-        requestAnimationFrame(scanFrame); // Try again on next frame
+        requestAnimationFrame(scanFrame);
         return;
     }
 
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const qrCode = jsQR(imageData.data, imageData.width, imageData.height);
 
     if (qrCode) {
-        // document.getElementById("userData").innerText = `QR Code: ${qrCode.data}`;
-        fetchUserData(qrCode.data.split('.')[1])
+        scanning = false; // Stop scanning after detecting a QR code
+        fetchUserData(qrCode.data.split('.')[1]);
     } else {
         requestAnimationFrame(scanFrame); // Continue scanning
     }
 }
 
+// Automatically start scanner when page loads
+window.addEventListener("load", startScanner);
 async function fetchUserData(userId) {
     try {
         const response = await fetch(`http://127.0.0.1:8000/students/${userId}`, {
@@ -254,42 +259,86 @@ async function fetchUserData(userId) {
         console.log(user)
 
         // Update user card
-        console.log(document.querySelector("#userId"))
-        console.log(user.photo_path)
-        document.getElementById("userId").innerText = user.id;
-        document.getElementById("userName").innerText = user.name;
-        document.getElementById("userAge").innerText = user.age;
-        document.getElementById("userFaculty").innerText = user.faculty_id;
-        // document.getElementById("profileImage").innerHTML = ``
+        document.getElementById("userId").innerText = user.students.id;
+        document.getElementById("userName").innerText = user.students.name;
+        document.getElementById("userGrade").innerText = user.students.Grade;
+        document.getElementById("userFaculty").innerText = user.students.faculty_id;
+        document.getElementById("userSeq").innerText = user.students.seq_number;
+
+        console.log(`attendance_system-master (1)/attendance_system-master/${user.students.photo}`)
+        document.getElementById("userImage").src = `attendance_system-master (1)/attendance_system-master/${user.students.photo}`
+        console.log(user)
+        document.getElementById("notice").value = user.students.notes
 
         // Enable buttons
         document.getElementById("approveBtn").disabled = false;
-        document.getElementById("rejectBtn").disabled = false;
     } catch (error) {
         console.error("Error fetching user data:", error);
     }
 }
 
-// Dummy function to simulate QR scan and fetch user data
+async function approve() {
+    const id = document.getElementById("userId").innerText.trim();
+    const notes = document.getElementById("notice").value.trim();
 
+    if (!id) {
+        console.error("User ID is missing.");
+        return;
+    }
 
-function approve() {
-    alert("User Approved!");
+    try {
+        console.log(notes)
+        const url = `http://127.0.0.1:8000/students/${id}/entrance?notes=${notes}`;
+
+        const response = await fetch(url, {
+            method: "POST", // Method must match FastAPI
+            headers: {
+                "Accept": "application/json"
+            }
+        });
+        
+            let data;
+            try {
+                data = await response.json(); // Read JSON response once
+            } catch (error) {
+                data = await response.text(); // If JSON parsing fails, get text response
+            }
+        
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${data}`);
+            }
+        
+            console.log("Server Response:", data);
+        
+
+        const result = await response.json();
+        console.log("Success:", result);
+        alert("Request approved successfully!");
+    } catch (error) {
+        console.error("Error approving request:", error);
+        alert("Failed to approve request. Check console for details.");
+    }
 }
 
-function reject() {
-    alert("User Rejected!");
-}
+
+let scanningLeave = false;
+
+document.addEventListener("DOMContentLoaded", () => {
+    startScannerLeave();
+});
 async function startScannerLeave() {
+    if (scanningLeave) return; // Prevent multiple starts
+    scanningLeave = true;
+
     const video = document.getElementById("qrScannerLeave");
 
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
         video.srcObject = stream;
-        video.play();
 
         video.onloadedmetadata = () => {
-            scanFrameLeave(); // Start scanning only when the video is ready
+            video.play(); 
+            scanFrameLeave();
         };
     } catch (error) {
         console.error("Error accessing camera:", error);
@@ -297,12 +346,14 @@ async function startScannerLeave() {
 }
 
 async function scanFrameLeave() {
+    if (!scanningLeave) return;
+
     const video = document.getElementById("qrScannerLeave");
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
-    if (video.readyState !== video.HAVE_ENOUGH_DATA) {
-        requestAnimationFrame(scanFrameLeave); // Try again on the next frame
+    if (video.readyState < 2) { 
+        requestAnimationFrame(scanFrameLeave);
         return;
     }
 
@@ -314,16 +365,82 @@ async function scanFrameLeave() {
     const qrCode = jsQR(imageData.data, imageData.width, imageData.height);
 
     if (qrCode) {
-        document.getElementById("userDataLeave").innerText = `QR Code: ${qrCode.data}`;
+        scanningLeave = false; // Stop scanning after detecting a QR code
+        fetchLeaveUserData(qrCode.data.split('.')[1]);
         document.getElementById("approveBtnLeave").disabled = false;
-        document.getElementById("rejectBtnLeave").disabled = false;
     } else {
-        requestAnimationFrame(scanFrameLeave); // Continue scanning
+        requestAnimationFrame(scanFrameLeave);
     }
 }
 
-function approveLeave() {
-    alert("Leave request approved!");
+async function fetchLeaveUserData(userId) {
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/students/${userId}`, {
+            method: "GET",
+            headers: {
+                "Accept": "application/json",
+            },
+            credentials: "include", // If your API requires authentication cookies
+        });
+
+        if (!response.ok) {
+            throw new Error("User not found");
+        }
+        const user = await response.json();
+        console.log(user)
+
+        // Update user card
+        document.getElementById("userIdLeave").innerText = user.students.id;
+        document.getElementById("userNameLeave").innerText = user.students.name;
+        document.getElementById("userGradeLeave").innerText = user.students.Grade;
+        document.getElementById("userFacultyLeave").innerText = user.students.faculty_id;
+        document.getElementById("userSeqLeave").innerText = user.students.seq_number;
+        document.getElementById("userImageLeave").src = `attendance_system-master (1)/attendance_system-master/${user.students.photo}`
+        document.getElementById("noticeLeave").value = user.students.notes
+        // Enable buttons
+        document.getElementById("approveBtn").disabled = false;
+    } catch (error) {
+        console.error("Error fetching user data:", error);
+    }
+}
+
+async function approveLeave() {
+    const id = document.getElementById("userId").innerText.trim();
+    const notes = document.getElementById("noticeLeave").value.trim();
+
+    if (!id) {
+        console.error("User ID is missing.");
+        return;
+    }
+
+    try {
+        console.log(notes);
+        const url = `http://127.0.0.1:8000/attendance/${id}/leave?notes=${encodeURIComponent(notes)}`;
+
+        const response = await fetch(url, {
+            method: "PUT", 
+            headers: {
+                "Accept": "application/json"
+            }
+        });
+
+        let data;
+        try {
+            data = await response.json(); // Try JSON response first
+        } catch (error) {
+            data = await response.text(); // If JSON parsing fails, get text response
+        }
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${data}`);
+        }
+
+        console.log("Server Response:", data);
+        alert("Leave request approved successfully!");
+    } catch (error) {
+        console.error("Error approving leave request:", error);
+        alert("Failed to approve leave request. Check console for details.");
+    }
 }
 
 function rejectLeave() {
@@ -345,64 +462,103 @@ document.addEventListener("DOMContentLoaded", function () {
         alert("Camera access not supported in this browser.");
     }
 });
+fetchStudents(); // Fetch students when the page loads
 
 document.addEventListener("DOMContentLoaded", function () {
-    showSection()
+    const sections = document.querySelectorAll(".section");
+
+    const lastSection = localStorage.getItem("lastSection") || "student";
+
+    function showSection(sectionId) {
+        // Hide all sections
+        sections.forEach(section => section.style.display = "none");
+
+        // Show the selected section
+        const targetSection = document.getElementById(sectionId);
+        if (targetSection) {
+            targetSection.style.display = "block";
+
+            // Save the last opened section in localStorage
+            localStorage.setItem("lastSection", sectionId);
+        }
+    }
+    showSection(lastSection)
     let students = [];
 
+ 
+    
     document.getElementById("studentForm").addEventListener("submit", function (event) {
         event.preventDefault();
         addStudent();
     });
-
-    function addStudent() {
-        let student = {
-            name: document.getElementById("name").value,
-            age: document.getElementById("age").value,
-            seqNumber: document.getElementById("seqNumber").value,
-            faculty_id: document.getElementById("faculty_id").value
-        };
-
-        students.push(student);
-        updateStudentTable();
-        document.getElementById("studentForm").reset();
-    }
-
-    function updateStudentTable() {
-        let tableBody = document.querySelector("#studentsTable tbody");
-        tableBody.innerHTML = "";
-
-        students.forEach((student, index) => {
-            let row = tableBody.insertRow();
-            row.innerHTML = `
-                <td>${student.name}</td>
-                <td>${student.email}</td>
-                <td>${student.age}</td>
-                <td>${student.seqNumber}</td>
-                <td>${student.faculty_id}</td>
-                <td>
-                    <button onclick="editStudent(${index})">Edit</button>
-                    <button onclick="deleteStudent(${index})">Delete</button>
-                </td>
-            `;
-        });
-    }
+    
+    // Fetch students from API
+    // async function fetchStudents() {
+    //     try {
+    //         const response = await fetch(
+    //             "http://127.0.0.1:8000/students",{
+    //                 method: "GET"
+    //             }
+    //         );
+    //         if (!response.ok) {
+    //             throw new Error(`HTTP error! Status: ${response.status}`);
+    //         }
+    
+    //         students = await response.json(); // Assuming API returns an array of students
+    //         // console.log(students, 5555)
+    //         updateStudentTable();
+    //     } catch (error) {
+    //         console.error("Error fetching students:", error);
+    //     }
+    // }
+    
+    // // Add a new student
+    // async function addStudent() {
+    //     let student = {
+    //         name: document.getElementById("name").value,
+    //         grade: document.getElementById("grade").value,
+    //         seqNumber: document.getElementById("seqNumber").value,
+    //         faculty_name: document.getElementById("faculty_name").value,
+    //         attended_days: 0
+    //     };
+    
+    //     try {
+    //         const response = await fetch("http://127.0.0.1:8000/students", {
+    //             method: "POST",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //             },
+    //             body: JSON.stringify(student),
+    //             credentials: "include",
+    //         });
+    
+    //         if (!response.ok) {
+    //             throw new Error(`Failed to add student. Status: ${response.status}`);
+    //         }
+    
+    //         // After successfully adding, fetch the updated student list
+    //         fetchStudents();
+    //         document.getElementById("studentForm").reset();
+    //     } catch (error) {
+    //         console.error("Error adding student:", error);
+    //     }
+    // }
 
     window.editStudent = function (index) {
         let student = students[index];
 
         document.getElementById("name").value = student.name;
-        document.getElementById("age").value = student.age;
+        document.getElementById("grade").value = student.age;
         document.getElementById("seqNumber").value = student.seqNumber;
         document.getElementById("faculty_id").value = student.faculty_id;
 
         students.splice(index, 1);
-        updateStudentTable();
+        populateStudentsTable();
     };
 
     window.deleteStudent = function (index) {
         students.splice(index, 1);
-        updateStudentTable();
+        populateStudentsTable();
     };
 });
 document.addEventListener("DOMContentLoaded", async function () {
@@ -525,6 +681,7 @@ async function fetchStudents() {
         }
 
         const students = await response.json();
+        
         populateStudentsTable(students);
     } catch (error) {
         console.error("Error fetching students:", error);
@@ -540,18 +697,18 @@ function populateStudentsTable(students) {
     students.students.forEach(student => {
         let photoPath = student.photo_path;
 
-        // Remove "file:///" from the beginning of the path
-        if (photoPath.startsWith(" file:///D:/work/MilitaryService")) {
-            photoPath = photoPath.replace(" file:///D:/work/MilitaryService", "");
-        }
-        console.log(photoPath)
+        // // Remove "file:///" from the beginning of the path
+        // if (photoPath.startsWith(" file:///D:/work/MilitaryService")) {
+        //     photoPath = photoPath.replace(" file:///D:/work/MilitaryService", "");
+        // }
+        // console.log(photoPath)
         const row = document.createElement("tr");
         row.innerHTML = `
             <td>${student.name}</td>
-            <td><img src=''></td>
-            <td>${student.age}</td>
+            <td>${student.Grade}</td>
             <td>${student.seq_number}</td>
-            <td>${student.faculty_id}</td>
+            <td>${student.faculty_name}</td>
+            <td>${student.notes !== undefined ? student.notes : '-'}</td>
             <td>
                 <button onclick="showEditForm(${student.id})">Edit</button>
                 <button onclick="redirectToStatisticsPage(${student.id})">Statistics</button>
@@ -594,10 +751,11 @@ function showEditForm(userId) {
     fetch(`http://127.0.0.1:8000/students/${userId}`)
         .then(response => response.json())
         .then(data => {
-            document.getElementById("editName").value = data.name;
-            document.getElementById("editAge").value = data.age;
-            document.getElementById("editSequence").value = data.seq_number;
-            document.getElementById("editUserId").value = data.id; // Store ID for update
+            document.getElementById("editName").value = data.students.name;
+            document.getElementById("editGrade").value = data.students.Grade;
+            document.getElementById("editSequence").value = data.students.seq_number;
+            document.getElementById("editNotes").value = data.students.notes;
+            document.getElementById("editUserId").value = data.students.id; // Store ID for update
         })
         .catch(error => console.error("Error fetching user:", error));
 }
@@ -610,13 +768,18 @@ async function updateUser() {
     try {
         const userId = document.getElementById("editUserId").value;
         const updatedName = document.getElementById("editName").value;
-        const updatedAge = document.getElementById("editAge").value;
+        const updatedGrade = document.getElementById("editGrade").value;
+        const updateNotes = document.getElementById("editNotes").value;
         const updatedSeq = document.getElementById("editSequence").value;
-
-        const response = await fetch(`http://127.0.0.1:8000/students/${userId}`, {
+        const queryParams = new URLSearchParams({
+            name: updatedName,
+            grade: updatedGrade,
+            seqNumber: updatedSeq,
+            notes: updateNotes
+        }).toString();
+        const response = await fetch(`http://127.0.0.1:8000/students/${userId}/data?${queryParams}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name: updatedName, age: updatedAge, seq_number: updatedSeq }),
         });
 
         if (!response.ok) throw new Error(`Failed to update user. Status: ${response.status}`);
@@ -631,6 +794,146 @@ async function updateUser() {
         alert("Failed to update user. Please try again.");
     }
 }
+//--------------------------------------------------------------------------------------------------
+// upload excel sheet 
+document.addEventListener("DOMContentLoaded", () => {
+    const facultyDropdown = document.getElementById("sheetFacultyId");
+    const fileInput = document.getElementById("excelFile");
+    const form = document.getElementById("bulkUploadForm");
+
+    // Function to fetch faculties
+    async function loadFaculties() {
+        try {
+            const response = await fetch("http://127.0.0.1:8000/faculties");
+            const faculties = await response.json();
+
+            facultyDropdown.innerHTML = '<option value="">Select Faculty</option>'; // Reset options
+
+            faculties.forEach(faculty => {
+                const option = document.createElement("option");
+                option.value = faculty.id;
+                option.textContent = faculty.name;
+                facultyDropdown.appendChild(option);
+            });
+        } catch (error) {
+            console.error("Error fetching faculties:", error);
+            facultyDropdown.innerHTML = '<option value="">Failed to load faculties</option>';
+        }
+    }
+
+    // Call function to load faculties
+    loadFaculties();
+
+    // Handle Form Submission
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const filePathInput = document.getElementById("filePath");
+        const facultyId = facultyDropdown.value;
+        const isMale = gender.value === "male"; // Convert string to boolean
+
+        if (!filePathInput || !facultyId) {
+            alert("Please fill all fields before submitting.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("file_path", filePathInput);
+        formData.append("faculty_id", facultyId);
+        formData.append("is_male", isMale);
+
+        try {
+            const response = await fetch("http://127.0.0.1:8000/students/sheet", {
+                method: "POST",
+                body: formData
+            });
+
+            if (response.ok) {
+                alert("File uploaded successfully!");
+                form.reset();
+            } else {
+                const errorData = await response.json();
+                alert("Upload failed: " + errorData.detail);
+            }
+        } catch (error) {
+            console.error("Upload error:", error);
+            alert("Error uploading file.");
+        }
+    });
+});
 
 
+//--------------------------------------------------------------------------------------------------
+// Download reports
+document.addEventListener("DOMContentLoaded", () => {
+    const reportsFacultyId = document.getElementById("reportsFacultyId");
+    const saveFileBtn = document.getElementById("saveFile");
 
+    // Function to fetch faculties
+    async function loadFaculties() {
+        try {
+            const response = await fetch("http://127.0.0.1:8000/faculties");
+            const faculties = await response.json();
+
+            reportsFacultyId.innerHTML = '<option value="">Select Faculty</option>'; // Reset options
+
+            faculties.forEach(faculty => {
+                const option = document.createElement("option");
+                option.value = faculty.id;
+                option.textContent = faculty.name;
+                reportsFacultyId.appendChild(option);
+            });
+        } catch (error) {
+            console.error("Error fetching faculties:", error);
+            reportsFacultyId.innerHTML = '<option value="">Failed to load faculties</option>';
+        }
+    }
+
+    loadFaculties();
+
+    // Function to download file
+    async function downloadFile() {
+        try {
+            const facultyId = reportsFacultyId.value;
+            const isMale = document.getElementById("gender").value === "male"; // Convert string to boolean
+
+
+            if (!facultyId || !gender) {
+                alert("Please select faculty and gender.");
+                return;
+            }
+
+            // Fetch the file from server
+            const response = await fetch(`http://127.0.0.1:8000/reports/faculty_report/${facultyId}?&is_male=${isMale}$save_location=%D9%82%D9%82%D9%82`);
+
+            if (!response.ok) {
+                throw new Error("Failed to download file");
+            }
+
+            // Convert to Blob
+            const blob = await response.blob();
+            const fileType = response.headers.get("Content-Type") || "application/octet-stream";
+
+            // Show save file dialog
+            const handle = await window.showSaveFilePicker({
+                suggestedName: "report.xlsx", // Suggest a filename
+                types: [{
+                    description: "Excel File",
+                    accept: { [fileType]: [".xlsx"] }
+                }]
+            });
+
+            // Write file to disk
+            const writable = await handle.createWritable();
+            await writable.write(blob);
+            await writable.close();
+
+            alert("File downloaded successfully!");
+        } catch (error) {
+            console.error("Error downloading file:", error);
+            alert("Failed to download file.");
+        }
+    }
+
+    saveFileBtn.addEventListener("click", downloadFile);
+});
