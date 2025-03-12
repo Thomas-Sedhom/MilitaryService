@@ -1,5 +1,18 @@
+window.addEventListener("beforeunload", function () {
+    localStorage.setItem("scrollPosition", window.scrollY);
+});
+
+window.addEventListener("load", function () {
+    setTimeout(() => {
+        const scrollPosition = localStorage.getItem("scrollPosition");
+        if (scrollPosition !== null) {
+            window.scrollTo(0, parseInt(scrollPosition, 10));
+        }
+    }, 100); // Delay to ensure DOM is fully rendered
+});
+
 // choose user gender
-let selectedGender = "";
+let selectedGender = 1;
 
 document.addEventListener("DOMContentLoaded", function () {
     const genderRadios = document.querySelectorAll('input[name="startedgender"]');
@@ -103,8 +116,7 @@ function dataURLToFile(dataUrl, fileName) {
 }
 //-------------------------------------------------------------------------------------------------
 
-document.getElementById("submitUserForm").addEventListener("click", async function (event) {
-    event.preventDefault(); // Prevent default form submission
+document.getElementById("submitUserForm").addEventListener("click", async function () {
 
     // Get input values
     const name = document.getElementById("name").value;
@@ -122,7 +134,6 @@ document.getElementById("submitUserForm").addEventListener("click", async functi
 
     const photoFile = dataURLToFile(photoBase64, "photo.png");
 
-    try {
         if(gender == 'male'){
             gender = true;
             console.log(gender)
@@ -144,38 +155,34 @@ document.getElementById("submitUserForm").addEventListener("click", async functi
         const response = await fetch(`http://127.0.0.1:8000/students/`, {
             method: "POST",
             body:formData,
-            credentials: 'include'
         });
 
-        const result = await response.json();
-        alert("Student saved successfully!");
-        console.log(result);
-    } catch (error) {
-        const result = await response;
+        const res = await response.json();
+        if(res.message != "Student created successfully"){
+            console.log(res);
+            alert(res.detail);
+            return;
+        }
 
-        console.error("Error:", result);
-        alert("Failed to save student.");
-    }
+        alert("Student saved successfully!");
+
 });
-document.getElementById("saveFaculty").addEventListener("click", async function (event) {
-    event.preventDefault(); // Prevent default form submission
-    console.log(11)
+console.log(document.getElementById("saveFaculty"))
+document.getElementById("saveFaculty").addEventListener("click", async function () {
     const facultyName = document.getElementById("facultyName").value;
     try {
         const response = await fetch(`http://127.0.0.1:8000/faculties/`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
+                "Accept": "application/json",   
+                "Content-Type": "application/json"  
             },
-            body:JSON.stringify({
+            body: JSON.stringify({
                 name: facultyName
-            }),
-            credentials: 'include'
+            })
         });
 
-        const result = await response.json();
         alert("Faculty saved successfully!");
-        console.log(result);
     } catch (error) {
         console.error("Error:", error);
         alert("Failed to save Faculty.");
@@ -249,7 +256,6 @@ async function fetchUserData(userId) {
             headers: {
                 "Accept": "application/json",
             },
-            credentials: "include", // If your API requires authentication cookies
         });
 
         if (!response.ok) {
@@ -276,17 +282,20 @@ async function fetchUserData(userId) {
         console.error("Error fetching user data:", error);
     }
 }
-
+function refreshPage() {
+    console.log(40)
+    location.reload(); // Reloads the current page
+}
 async function approve() {
     const id = document.getElementById("userId").innerText.trim();
-    const notes = document.getElementById("notice").value.trim();
+    const notes = encodeURIComponent(document.getElementById("notice").value.trim());
+
 
     if (!id) {
         console.error("User ID is missing.");
         return;
     }
 
-    try {
         console.log(notes)
         const url = `http://127.0.0.1:8000/students/${id}/entrance?notes=${notes}`;
 
@@ -294,30 +303,17 @@ async function approve() {
             method: "POST", // Method must match FastAPI
             headers: {
                 "Accept": "application/json"
-            }
+            },
+            credentials: "include"
         });
         
-            let data;
-            try {
-                data = await response.json(); // Read JSON response once
-            } catch (error) {
-                data = await response.text(); // If JSON parsing fails, get text response
-            }
-        
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${data}`);
-            }
-        
-            console.log("Server Response:", data);
-        
-
-        const result = await response.json();
-        console.log("Success:", result);
+        const res = await response.json();
+        if (res.status != 200) {
+            alert(res.detail);
+            refreshPage()
+            return
+        }
         alert("Request approved successfully!");
-    } catch (error) {
-        console.error("Error approving request:", error);
-        alert("Failed to approve request. Check console for details.");
-    }
 }
 
 
@@ -380,7 +376,6 @@ async function fetchLeaveUserData(userId) {
             headers: {
                 "Accept": "application/json",
             },
-            credentials: "include", // If your API requires authentication cookies
         });
 
         if (!response.ok) {
@@ -413,7 +408,6 @@ async function approveLeave() {
         return;
     }
 
-    try {
         console.log(notes);
         const url = `http://127.0.0.1:8000/attendance/${id}/leave?notes=${encodeURIComponent(notes)}`;
 
@@ -423,24 +417,12 @@ async function approveLeave() {
                 "Accept": "application/json"
             }
         });
-
-        let data;
-        try {
-            data = await response.json(); // Try JSON response first
-        } catch (error) {
-            data = await response.text(); // If JSON parsing fails, get text response
+        const res = await response.json();
+        if (res.status != 200) {
+            alert(res.detail);
         }
+        alert("Request approved successfully!");
 
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${data}`);
-        }
-
-        console.log("Server Response:", data);
-        alert("Leave request approved successfully!");
-    } catch (error) {
-        console.error("Error approving leave request:", error);
-        alert("Failed to approve leave request. Check console for details.");
-    }
 }
 
 function rejectLeave() {
@@ -529,7 +511,6 @@ document.addEventListener("DOMContentLoaded", function () {
     //                 "Content-Type": "application/json",
     //             },
     //             body: JSON.stringify(student),
-    //             credentials: "include",
     //         });
     
     //         if (!response.ok) {
@@ -556,10 +537,10 @@ document.addEventListener("DOMContentLoaded", function () {
         populateStudentsTable();
     };
 
-    window.deleteStudent = function (index) {
-        students.splice(index, 1);
-        populateStudentsTable();
-    };
+    // window.deleteStudent = function (index) {
+    //     students.splice(index, 1);
+    //     populateStudentsTable(students);
+    // };
 });
 document.addEventListener("DOMContentLoaded", async function () {
     const facultyForm = document.getElementById("facultyForm");
@@ -645,6 +626,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         try {
             const response = await fetch(`http://127.0.0.1:8000/faculties/${id}`, {
                 method: "DELETE",
+                
             });
 
             if (response.ok) {
@@ -713,6 +695,7 @@ function populateStudentsTable(students) {
                 <button onclick="showEditForm(${student.id})">Edit</button>
                 <button onclick="redirectToStatisticsPage(${student.id})">Statistics</button>
                 <button onclick="deleteStudent(${student.id})">Delete</button>
+                <button onclick="showUpdateImageForm(${student.id})">Update Image</button>
             </td>
         `;
         tableBody.appendChild(row);
@@ -764,6 +747,90 @@ function closeEditForm() {
     document.getElementById("editUserForm").style.display = "none";
 }
 
+//---------------------------------------------------------------------------------------------------
+// Update image logic 
+function showUpdateImageForm(userId) {
+    document.getElementById("updateUserId").value = userId;
+    document.getElementById("updateImageForm").style.display = "block";
+
+    // Start the camera
+    const video = document.getElementById("updateCamera");
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+            video.srcObject = stream;
+        })
+        .catch(err => console.error("Error accessing camera:", err));
+}
+
+function closeUpdateImageForm() {
+    document.getElementById("updateImageForm").style.display = "none";
+    const video = document.getElementById("updateCamera");
+    if (video.srcObject) {
+        video.srcObject.getTracks().forEach(track => track.stop()); // Stop the camera stream
+    }
+}
+
+function captureUpdatedPhoto() {
+    const video = document.getElementById("updateCamera");
+    const canvas = document.getElementById("updatePhotoCanvas");
+    const context = canvas.getContext("2d");
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+}
+
+function dataURLToFile(dataurl, filename) {
+    let arr = dataurl.split(',');
+    let mime = arr[0].match(/:(.*?);/)[1];
+    let bstr = atob(arr[1]);
+    let n = bstr.length;
+    let u8arr = new Uint8Array(n);
+    while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+}
+document.getElementById("uploadImageButton").addEventListener("click", uploadUpdatedImage);
+
+async function uploadUpdatedImage(event) {
+    console.log(event)
+    event.preventDefault(); // Prevent form submission and page refresh
+
+    try {
+        const userId = document.getElementById("updateUserId").value;
+        const canvas = document.getElementById("updatePhotoCanvas");
+        const photoBase64 = canvas.toDataURL("image/png");
+
+        if (!photoBase64) {
+            alert("Please capture an image before uploading.");
+            return;
+        }
+
+        const photoFile = dataURLToFile(photoBase64, "updated_photo.png");
+
+        const formData = new FormData();
+        formData.append("photo", photoFile);
+
+        const response = await fetch(`http://127.0.0.1:8000/students/${userId}/photo`, {
+            method: "PUT",
+            body: formData,
+        });
+
+        console.log(response)
+
+        if (response.status != 200) throw new Error(`Failed to upload image. Status: ${response.status}`);
+
+        alert("Image updated successfully!");
+
+    } catch (error) {
+        console.error("Error updating image:", error);
+        alert("Failed to update image. Please try again.");
+    }
+}
+
+
+
 async function updateUser() {
     try {
         const userId = document.getElementById("editUserId").value;
@@ -795,7 +862,7 @@ async function updateUser() {
     }
 }
 //--------------------------------------------------------------------------------------------------
-// upload excel sheet 
+// Upload excel sheet 
 document.addEventListener("DOMContentLoaded", () => {
     const facultyDropdown = document.getElementById("sheetFacultyId");
     const fileInput = document.getElementById("excelFile");
@@ -829,6 +896,15 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
 
         const filePathInput = document.getElementById("filePath");
+        file = filePathInput.files[0]; // Get the selected file
+        filePathInput.addEventListener("change", function (event) {
+            file = filePathInput.files[0]; // Get the selected file
+            if (file) {
+                console.log("Selected file:", file.name);
+            } else {
+                console.log("No file selected");
+            }
+        });
         const facultyId = facultyDropdown.value;
         const isMale = gender.value === "male"; // Convert string to boolean
 
@@ -838,10 +914,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const formData = new FormData();
-        formData.append("file_path", filePathInput);
+        formData.append("file", file);
         formData.append("faculty_id", facultyId);
         formData.append("is_male", isMale);
 
+        console.log(file,facultyId, isMale )
         try {
             const response = await fetch("http://127.0.0.1:8000/students/sheet", {
                 method: "POST",
@@ -853,7 +930,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 form.reset();
             } else {
                 const errorData = await response.json();
-                alert("Upload failed: " + errorData.detail);
+                alert("Upload failed: " + errorData);
             }
         } catch (error) {
             console.error("Upload error:", error);
@@ -862,78 +939,26 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-
-//--------------------------------------------------------------------------------------------------
-// Download reports
-document.addEventListener("DOMContentLoaded", () => {
-    const reportsFacultyId = document.getElementById("reportsFacultyId");
-    const saveFileBtn = document.getElementById("saveFile");
-
-    // Function to fetch faculties
-    async function loadFaculties() {
-        try {
-            const response = await fetch("http://127.0.0.1:8000/faculties");
-            const faculties = await response.json();
-
-            reportsFacultyId.innerHTML = '<option value="">Select Faculty</option>'; // Reset options
-
-            faculties.forEach(faculty => {
-                const option = document.createElement("option");
-                option.value = faculty.id;
-                option.textContent = faculty.name;
-                reportsFacultyId.appendChild(option);
-            });
-        } catch (error) {
-            console.error("Error fetching faculties:", error);
-            reportsFacultyId.innerHTML = '<option value="">Failed to load faculties</option>';
-        }
-    }
-
-    loadFaculties();
-
-    // Function to download file
-    async function downloadFile() {
-        try {
-            const facultyId = reportsFacultyId.value;
-            const isMale = document.getElementById("gender").value === "male"; // Convert string to boolean
-
-
-            if (!facultyId || !gender) {
-                alert("Please select faculty and gender.");
-                return;
+document.getElementById("resetButton").addEventListener("click", async function () {
+    const confirmReset = confirm("Are you sure you want to reset all data?");
+    if (!confirmReset) return;
+    console.log(selectedGender)
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/metadata/reset?is_male=${selectedGender}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
             }
+        });
 
-            // Fetch the file from server
-            const response = await fetch(`http://127.0.0.1:8000/reports/faculty_report/${facultyId}?&is_male=${isMale}$save_location=%D9%82%D9%82%D9%82`);
-
-            if (!response.ok) {
-                throw new Error("Failed to download file");
-            }
-
-            // Convert to Blob
-            const blob = await response.blob();
-            const fileType = response.headers.get("Content-Type") || "application/octet-stream";
-
-            // Show save file dialog
-            const handle = await window.showSaveFilePicker({
-                suggestedName: "report.xlsx", // Suggest a filename
-                types: [{
-                    description: "Excel File",
-                    accept: { [fileType]: [".xlsx"] }
-                }]
-            });
-
-            // Write file to disk
-            const writable = await handle.createWritable();
-            await writable.write(blob);
-            await writable.close();
-
-            alert("File downloaded successfully!");
-        } catch (error) {
-            console.error("Error downloading file:", error);
-            alert("Failed to download file.");
+        if (response.ok) {
+            alert("Data has been reset successfully!");
+        } else {
+            alert("Failed to reset data.");
         }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Error occurred while resetting data.");
     }
-
-    saveFileBtn.addEventListener("click", downloadFile);
 });

@@ -358,6 +358,11 @@ button {
     border-radius: 5px;
     border: 1px solid #ccc;
 }
+
+#go #userImage, #leave #userImageLeave{
+    width: 100%;
+}
+
 #leave .scanner-container {
     display: flex;
     gap: 10px; /* Space between elements */
@@ -394,4 +399,20 @@ button {
     padding: 10px;
     border-radius: 5px;
     border: 1px solid #ccc;
+}
+
+#reportType , #facultySelect, #reportDate{
+    max-width: 50%;
+}
+
+#reportControls{
+    display: flex;
+    align-content: space-between;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#updatePhotoCanvas{
+    width: 38%;
 }

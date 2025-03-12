@@ -1,3 +1,6 @@
+const urlParams = new URLSearchParams(window.location.search);
+const studentId = urlParams.get("id"); // Extract 'id' from ?id=1
+
 document.addEventListener("DOMContentLoaded", async () => {
     // Get the ID from the URL query string
     const urlParams = new URLSearchParams(window.location.search);
@@ -52,6 +55,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     { "entrance_time": "2025-03-11T01:52:45.520023", "leave_time": "2025-03-11T03:28:40.093453" }
 ];
 
+
+
 function formatTime(timeStr) {
     const date = new Date(timeStr);
     return date.toLocaleTimeString("en-US", {
@@ -66,22 +71,39 @@ function formatDate(dateStr) {
     return date.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric", year: "numeric" });
 }
 
-function generateAttendanceTable() {
-    const tableBody = document.getElementById("attendanceTableBody");
+async function generateAttendanceTable() {
+    try {
+        // Fetch student data from API
+        const response = await fetch(`http://127.0.0.1:8000/students/${studentId}`, {
+            method: "GET", // Correctly specify the HTTP method
+            headers: {
+                "Content-Type": "application/json", // Optional but good practice
+            },
+        });
+        if (!response.ok) {
+            throw new Error(`Failed to fetch student data: ${response.statusText}`);
+        }
+    
+        const student = await response.json(); // Convert response to JSON
+        const tableBody = document.getElementById("attendanceTableBody");
     tableBody.innerHTML = "";
 
-    attendanceRecords.forEach((record, index) => {
+    student.students.attendance_records.forEach((record, index) => {
         const row = document.createElement("tr");
 
         row.innerHTML = `
             <td>${formatDate(record.entrance_time)}</td>
             <td>${formatTime(record.entrance_time)}</td>
             <td>${formatTime(record.leave_time)}</td>
-            <td><input type="checkbox" checked disabled></td>
         `;
 
         tableBody.appendChild(row);
     });
+    
+    } catch (error) {
+        console.error("Error fetching student data:", error);
+    }
+
 }
 
 generateAttendanceTable();
