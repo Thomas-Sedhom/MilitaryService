@@ -1,3 +1,21 @@
+// add student logic 
+document.addEventListener("DOMContentLoaded", function () {
+    const studentFormSection = document.getElementById("student");
+    const openFormButton = document.getElementById("openStudentForm");
+    const closeFormButton = document.getElementById("closeStudentForm");
+
+    // Show the Student Management form when clicking "Add Student"
+    openFormButton.addEventListener("click", function () {
+        studentFormSection.style.display = "block";
+    });
+
+    // Hide the Student Management form when clicking "Cancel"
+    closeFormButton.addEventListener("click", function () {
+        studentFormSection.style.display = "none";
+    });
+});
+
+//--------------------------------------------------------------------------------------------
 window.addEventListener("beforeunload", function () {
     localStorage.setItem("scrollPosition", window.scrollY);
 });
@@ -168,7 +186,8 @@ document.getElementById("submitUserForm").addEventListener("click", async functi
 
 });
 console.log(document.getElementById("saveFaculty"))
-document.getElementById("saveFaculty").addEventListener("click", async function () {
+document.getElementById("saveFaculty").addEventListener("click", async function (event) {
+    event.preventDefault();
     const facultyName = document.getElementById("facultyName").value;
     try {
         const response = await fetch(`http://127.0.0.1:8000/faculties/`, {
@@ -561,7 +580,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     function makeFacultiesDropDownMenu(){
         const facultyDropdown = document.getElementById("faculty_id");
-        facultyDropdown.innerHTML = '<option value="">Select Faculty</option>'; // Reset dropdown
+        facultyDropdown.innerHTML = '<option value="">اختر الكلية</option>'; // Reset dropdown
         
         faculties.forEach(faculty => {
             const option = document.createElement("option");
@@ -692,10 +711,10 @@ function populateStudentsTable(students) {
             <td>${student.faculty_name}</td>
             <td>${student.notes !== undefined ? student.notes : '-'}</td>
             <td>
-                <button onclick="showEditForm(${student.id})">Edit</button>
-                <button onclick="redirectToStatisticsPage(${student.id})">Statistics</button>
-                <button onclick="deleteStudent(${student.id})">Delete</button>
-                <button onclick="showUpdateImageForm(${student.id})">Update Image</button>
+                <button onclick="showEditForm(${student.id})">تعديل</button>
+                <button onclick="redirectToStatisticsPage(${student.id})">احصائيات</button>
+                <button onclick="deleteStudent(${student.id})">حذف</button>
+                <button onclick="showUpdateImageForm(${student.id})">تعديل الصورة</button>
             </td>
         `;
         tableBody.appendChild(row);
@@ -874,7 +893,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const response = await fetch("http://127.0.0.1:8000/faculties");
             const faculties = await response.json();
 
-            facultyDropdown.innerHTML = '<option value="">Select Faculty</option>'; // Reset options
+            facultyDropdown.innerHTML = '<option value="">اختر كلية</option>'; // Reset options
 
             faculties.forEach(faculty => {
                 const option = document.createElement("option");

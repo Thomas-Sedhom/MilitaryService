@@ -9,117 +9,120 @@
 <body>
     <div class="container">
         <aside class="sidebar">
-            <h2>Dashboard</h2>
+            <h2>لوحة التحكم</h2>
             <!-- Gender Selection -->
             <div class="gender-selection">
-                <label><input type="radio" name="startedgender" value="1" checked />Male</label>
-                <label><input type="radio" name="startedgender" value="0" />Female</label>
+                <label><input type="radio" name="startedgender" value="1" checked />ذكر</label>
+                <label><input type="radio" name="startedgender" value="0" />انثي</label>
             </div>
             <ul>
-                <li data-section="student">Student</li>
-                <li data-section="studentsList">All students</li>
-                <li data-section="faculty">Faculty</li>
-                <li data-section="facultyList">All faculties</li>
-                <li data-section="go">Go</li>
-                <li data-section="leave">Leave</li>
-                <li data-section="bulkUploadSection">Bulk Upload</li>
-                <li data-section="reports">Reports</li>
+                <li data-section="studentsList">ادارة الطلاب</li>
+                <li data-section="facultyList">ادارة الكليات</li>
+                <li data-section="bulkUploadSection">اضافة ملف</li>
+                <li data-section="reports">تقارير</li>
+                <li data-section="go">تسجيل الحضور</li>
+                <li data-section="leave">تسجيل الذهاب</li>
             </ul>
-            <button id="resetButton">Reset Data</button>
+            <button id="resetButton">مسح جميع البيانات</button>
         </aside>
         
         
         <main class="content">
-            <section id="student" class="section">
-                <h2>Student Management</h2>
+            <section id="student" class="section" style="display: none;">
+                <h2>ادارة الطلاب</h2>
                 <form id="studentForm">
-                    <input type="text" placeholder="Name" id="name" required>
-                    <input type="number" placeholder="phone_number" id="phone_number" required>
-                    <input type="number" placeholder="grade" id="grade" required>
-                    <input type="text" placeholder="Sequence Number" id="seqNumber" required>
-                    <input type="text" placeholder="National ID" id="national_id" required>
+                    <input type="text" placeholder="الاسم" id="name" required>
+                    <input type="number" placeholder="رقم الهاتف" id="phone_number" required>
+                    <input type="number" placeholder="رقم الكتيبة" id="grade" required>
+                    <input type="text" placeholder="رقم التسلسل" id="seqNumber" required>
+                    <input type="text" placeholder="الرقم القومي" id="national_id" required>
                     <select id="faculty_id" required>
-                        <option value="">Select Faculty</option>
+                        <option value="">اختر الكلية</option>
                     </select>
-                    <label>Male</label>
+                    <label>ذكر</label>
                     <input type="radio" value="male" name="gender">
-                    <label>Female</label>
+                    <label>انثي</label>
                     <input type="radio" value="female" name="gender">
                     <video id="camera" autoplay></video>
                     <canvas id="photoCanvas"></canvas>
-                    <button type="button" onclick="capturePhoto()">Capture Photo</button>
+                    <button type="button" onclick="capturePhoto()">التقط صورة</button>
 
-                    <button type="button" id="submitUserForm">Save</button>
+                    <button type="button" id="submitUserForm">حفظ</button>
+                    <button type="button" id="closeStudentForm">اغلاق</button>
+
                 </form>
             </section>
             <section id="studentsList" class="section">
-                <h2>All Students</h2>
+                <h2>جميع الطلاب</h2>
                     <!-- Filters Section -->
+                <!-- Button to open Student Management Form -->
+                <button id="openStudentForm">اضافة طالب</button>
                 <div class="filters">
-                    <input type="text" id="filterByName" placeholder="Filter by Name">
-                    <input type="number" id="filterBySequence" placeholder="Filter by Sequence Number">
-                    <input type="text" id="filterByFaculty" placeholder="Filter by Faculty">
+                    <input type="text" id="filterByName" placeholder="البحث عن طريق الاسم">
+                    <input type="number" id="filterBySequence" placeholder="البحث عن طريق رقم التسلسل">
+                    <input type="text" id="filterByFaculty" placeholder="البحث عن طريق الكلية">
 
-                    <button onclick="clearFilters()">Clear Filters</button>
+                    <button onclick="clearFilters()">مسح المرشحات</button>
                 </div>
                 <table id="studentsTable">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>grade</th>
-                            <th>Sequence Number</th>
-                            <th>Faculty</th>
-                            <th>Notes</th>
-                            <th>Actions</th>
+                            <th>الاسم</th>
+                            <th>الكتيبة</th>
+                            <th>التسلسل </th>
+                            <th>الكلية</th>
+                            <th>ملاحظات</th>
+                            <th>الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody>
                         <!-- Student rows will be inserted here dynamically -->
                     </tbody>
                 </table>
-                <div id="editUserForm" style="display: none; position: absolute; top: 50px; left: 50%; transform: translateX(-50%); background: white; padding: 20px; box-shadow: 0px 0px 10px rgba(0,0,0,0.3) ; padding-right: 37px">
-                    <h2>Edit User</h2>
+                <div id="editUserForm" style="display: none; position: absolute; top: 50px; left: 50%; transform: translateX(-50%); background: white; padding: 20px; box-shadow: 0px 0px 10px rgba(0,0,0,0.3) ; padding-left: 37px">
+                    <h2>تعديل البيانات</h2>
                     <input type="hidden" id="editUserId">
-                    <label>Name:</label>
+                    <label>الاسم:</label>
                     <input type="text" id="editName">
-                    <label>Grade:</label>
+                    <label>الكتيبة:</label>
                     <input type="text" id="editGrade">
-                    <label>Sequence Number:</label>
+                    <label>التسلسل:</label>
                     <input type="text" id="editSequence">
-                    <label>Notes:</label>
+                    <label>الملاحظات:</label>
                     <input type="text" id="editNotes">
-                    <button onclick="updateUser()">Save</button>
-                    <button onclick="closeEditForm()">Cancel</button>
+                    <button onclick="updateUser()">حفظ</button>
+                    <button onclick="closeEditForm()">الغاء</button>
                 </div>
                 <form onsubmit="return false;">
 
                 <div id="updateImageForm" style="display: none; position: absolute; top: 50px; left: 50%; transform: translateX(-50%); background: white; padding: 20px; box-shadow: 0px 0px 10px rgba(0,0,0,0.3)">
-                    <h2>Update Image</h2>
+                    <h2>تعدديل الصورة</h2>
                     <input type="hidden" id="updateUserId">
                     <video id="updateCamera" autoplay></video>
                     <canvas id="updatePhotoCanvas"></canvas>
-                    <button type="button" onclick="captureUpdatedPhoto()">Capture Photo</button>
-                    <button type="button" id="uploadImageButton">Upload</button>
-                    <button type="button" onclick="closeUpdateImageForm()">Cancel</button>
+                    <button type="button" onclick="captureUpdatedPhoto()">التقط صورة</button>
+                    <button type="button" id="uploadImageButton">تعديل</button>
+                    <button type="button" onclick="closeUpdateImageForm()">الغاء</button>
                 </div>
             </form>
 
             </section>
             <section id="faculty" class="section">
-                <h2>Faculty Management</h2>
-                <form id="facultyForm">
-                    <input type="text" placeholder="Name" id="facultyName" required>
-                    <button type="submit" id="saveFaculty">Save</button>
-                </form>
+
             </section>
             <section id="facultyList" class="section">
-                <h2>Faculty List</h2>
+                <h2>ادارة الكليات</h2>
+                <form id="facultyForm">
+                    <input type="text" placeholder="اسم الكلبة" id="facultyName" required>
+                    <button type="submit" id="saveFaculty">حفظ</button>
+                </form>
+                <h2>قائمة الكليات</h2>
                 <table id="facultyTable">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Name</th>
-                            <th>Actions</th>
+                            <th>الاسم</th>
+                            <th>الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -128,7 +131,7 @@
                 </table>
             </section>
             <section id="go" class="section">
-                <h2>Go - QR Scanner</h2>
+                <h2>حضور - ماسح رمز الاستجابة السريعة</h2>
                 <div class="scanner-container">
                     <!-- QR Scanner Video -->
                     <div class="cont">
@@ -136,22 +139,22 @@
                     </div>
                     <div class="cont">
                         <div class="user-card">
-                            <h3>User Information</h3>
+                            <h3>بيانات الطالب</h3>
                             <div class="user-info">
                                 <img id="userImage" src="" alt="User Image">
                                 <div class="info-text">
                                     <p><strong>ID:</strong> <span id="userId">-</span></p>
-                                    <p><strong>Name:</strong> <span id="userName">-</span></p>
-                                    <p><strong>Grade:</strong> <span id="userGrade">-</span></p>
-                                    <p><strong>Faculty:</strong> <span id="userFaculty">-</span></p>
-                                    <p><strong>Sequence Number:</strong> <span id="userSeq">-</span></p>
+                                    <p><strong>الاسم:</strong> <span id="userName">-</span></p>
+                                    <p><strong>الكتيبة:</strong> <span id="userGrade">-</span></p>
+                                    <p><strong>الكلية:</strong> <span id="userFaculty">-</span></p>
+                                    <p><strong>التسلسل:</strong> <span id="userSeq">-</span></p>
                                 </div>
                             </div>
-                            <label for="notice">Notice:</label>
+                            <label for="notice">ملاحظات:</label>
                             <textarea id="notice" placeholder="Enter notice..." rows="4"></textarea>                            
                             <div class="btn-group">
-                                <button onclick="approve()" disabled id="approveBtn">Accept</button>
-                                <button onclick="refreshPage()" id="rejectBtn">Reject</button>
+                                <button onclick="approve()" disabled id="approveBtn">قبول</button>
+                                <button onclick="refreshPage()" id="rejectBtn">رفض</button>
                             </div>
                         </div>
                     </div>                    
@@ -159,7 +162,7 @@
             </section>
             
             <section id="leave" class="section">
-                <h2>Leave - QR Scanner</h2>
+                <h2>ذهاب - ماسح رمز الاستجابة السريعة</h2>
                 <div class="scanner-container">
                     <!-- QR Scanner Video -->
                     <div class="cont">
@@ -167,51 +170,50 @@
                     </div>
                     <div class="cont">
                         <div class="user-card">
-                            <h3>User Information</h3>
+                            <h3>بيانات الطالب</h3>
                             <div class="user-info">
                                 <img id="userImageLeave" src="" alt="User Image">
                                 <div class="info-text">
                                     <p><strong>ID:</strong> <span id="userIdLeave">-</span></p>
-                                    <p><strong>Name:</strong> <span id="userNameLeave">-</span></p>
-                                    <p><strong>Grade:</strong> <span id="userGradeLeave">-</span></p>
-                                    <p><strong>Faculty:</strong> <span id="userFacultyLeave">-</span></p>
-                                    <p><strong>Sequence Number:</strong> <span id="userSeqLeave">-</span></p>
+                                    <p><strong>الاسم:</strong> <span id="userNameLeave">-</span></p>
+                                    <p><strong>الكتيبة:</strong> <span id="userGradeLeave">-</span></p>
+                                    <p><strong>الكلية:</strong> <span id="userFacultyLeave">-</span></p>
+                                    <p><strong>التسلسل:</strong> <span id="userSeqLeave">-</span></p>
                                 </div>
                             </div>
-                            <label for="noticeLeave">Notice:</label>
+                            <label for="noticeLeave">ملاحظات:</label>
                             <textarea id="noticeLeave" placeholder="Enter notice..." rows="4"></textarea>                            
                             <div class="btn-group">
-                                <button onclick="approveLeave()" disabled id="approveBtnLeave">Accept</button>
-                                <button onclick="refreshPage()" id="rejectBtn">Reject</button>
-
+                                <button onclick="approveLeave()" disabled id="approveBtnLeave">قبول</button>
+                                <button onclick="refreshPage()" id="rejectBtn">رفض</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>  
             <section id="bulkUploadSection" class="section">
-                <h3>Upload Excel File</h3>
+                <h3>تحميل ملف اكسل</h3>
                 
                 <form id="bulkUploadForm">
                     <!-- File Input -->
-                    <label for="filePath">Upload File:</label>
+                    <label for="filePath">تحميل ملف:</label>
                     <input type="file" id="filePath">
                     
                     <!-- Faculty Dropdown -->
-                    <label for="sheetFacultyId">Select Faculty:</label>
+                    <label for="sheetFacultyId">اختر كلية:</label>
                     <select id="sheetFacultyId" required>
                         <option value="">Loading faculties...</option>
                     </select>
             
                     <!-- Gender Selection -->
-                    <label for="gender">Select Gender:</label>
+                    <label for="gender">اختر النوع:</label>
                     <select id="gender" required>
-                        <option value="">Select Gender</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
+                        <option value="">اختر النوع</option>
+                        <option value="male">ذكر</option>
+                        <option value="female">انثي</option>
                     </select>
             
-                    <button type="submit">Upload</button>
+                    <button type="submit">تحميل</button>
                 </form>
             </section>
             <section id="reports" class="section" dir="rtl">

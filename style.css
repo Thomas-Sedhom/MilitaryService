@@ -37,6 +37,30 @@ body {
 .sidebar a{
     color: wheat;
 }
+
+.sidebar ul li[data-section="go"] {
+    background-color: #28a745; /* Green background for "Go" */
+    color: white; /* White text */
+    padding: 10px;
+    margin-top: 20px; /* Adds spacing from the previous item */
+    border-radius: 5px; /* Rounded corners */
+    text-align: center;
+}
+
+.sidebar ul li[data-section="leave"] {
+    background-color: #28a745;; /* Red background for "Leave" */
+    color: white;
+    padding: 10px;
+    margin-top: 10px; /* Adds spacing between "Go" and "Leave" */
+    border-radius: 5px;
+    text-align: center;
+}
+
+.sidebar ul li[data-section="go"]:hover,
+.sidebar ul li[data-section="leave"]:hover {
+    opacity: 0.8; /* Slight transparency effect on hover */
+    cursor: pointer; /* Changes cursor to pointer */
+}
 .content {
     flex: 1;
     padding: 20px;
@@ -45,6 +69,7 @@ body {
 }
 .section {
     display: none;
+    direction: rtl;
 }
 .section.active {
     display: block;
@@ -54,6 +79,7 @@ form {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    direction: rtl;
 }
 input, button, select {
     display: block;
@@ -84,6 +110,7 @@ video {
     background-color: #f9f9f9;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    direction: rtl;
 }
 
 #studentsList h2 {
@@ -102,7 +129,7 @@ video {
 
 #studentsTable th, #studentsTable td {
     padding: 12px;
-    text-align: left;
+    text-align: right;
     border-bottom: 1px solid #ddd;
 }
 
@@ -147,6 +174,7 @@ button:last-child {
     background-color: #f9f9f9;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    direction: rtl;
 }
 
 #facultyList h2 {
@@ -165,7 +193,7 @@ button:last-child {
 
 #facultyTable th, #facultyTable td {
     padding: 12px;
-    text-align: left;
+    text-align: right;
     border-bottom: 1px solid #ddd;
 }
 
