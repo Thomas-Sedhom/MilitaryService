@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="./style/style.css" />
+    <link rel="stylesheet"href="./style/all.min.css"/>
+  </head>
+  <body>
+    <div class="container">
+      <aside class="sidebar">
+        <h2>لوحة التحكم</h2>
+        <!-- Gender Selection -->
+        <div class="gender-selection">
+          <label
+            ><input
+              type="radio"
+              name="startedgender"
+              value="1"
+              checked
+            />ذكر</label
+          >
+          <label
+            ><input type="radio" name="startedgender" value="0" />انثي</label
+          >
+        </div>
+        <ul>
+          <li data-section="studentsList">ادارة الطلاب</li>
+          <li data-section="facultyList">ادارة الكليات</li>
+          <!-- <li data-section="bulkUploadSection">اضافة ملف</li> -->
+          <li data-section="reports">تقارير</li>
+          <li data-section="go">تسجيل الحضور</li>
+          <li id="resetButton">مسح جميع البيانات</li>
+        </ul>
+      </aside>
+
+      <main class="content">
+        <section id="student" class="section" style="display: none">
+          <h2>ادارة الطلاب</h2>
+          <form id="studentForm" class="form-container">
+            
+            <div class="input-row">
+              <div class="input-group">
+                <input type="text" placeholder="الاسم" id="name" required />
+              </div>
+              <div class="input-group">
+                <input type="number" placeholder="رقم الهاتف" id="phone_number" required />
+              </div>
+            </div>
+        
+            <div class="input-row">
+              <div class="input-group">
+                <input type="text" placeholder="رقم التسلسل" id="seqNumber" required />
+              </div>
+              <div class="input-group">
+                <input type="text" placeholder="الرقم القومي" id="national_id" required />
+              </div>
+            </div>
+        
+            <div class="input-group">
+              <select id="faculty_id" required>
+                <option value="">اختر الكلية</option>
+              </select>
+            </div>
+        
+            <div class="camera-container">
+              <video id="camera" autoplay></video>
+              <canvas id="photoCanvas"></canvas>
+              <button type="button" onclick="capturePhoto()">التقط صورة</button>
+            </div>
+        
+            <div class="button-group">
+              <button type="button" id="submitUserForm" class="btn-primary">حفظ</button>
+              <button type="button" id="closeStudentForm" class="btn-secondary">اغلاق</button>
+            </div>
+        
+          </form>
+        </section>
+        <section id="studentsList" class="section">
+          <!-- Filters Section -->
+          <!-- Button to open Student Management Form -->
+
+          <div class="addStudentcontainder">
+            <button id="openStudentForm">اضافة طالب</button>
+            <button id="bulkUploadButton">اضافة ملف طلبة</button>
+          </div>
+          <h2>جميع الطلاب</h2>
+          <div class="filters">
+            <input
+              type="text"
+              id="filterByName"
+              placeholder="البحث عن طريق الاسم"
+            />
+            <input
+              type="number"
+              id="filterBySequence"
+              placeholder="البحث عن طريق الرقم المسلسل"
+            />
+            <input
+              type="text"
+              id="filterByFaculty"
+              placeholder="البحث عن طريق الكلية"
+            />
+            <input
+              type="text"
+              id="filterByNationalId"
+              placeholder="البحث عن طريق الرقم القومى"
+            />
+            <button onclick="clearFilters()">مسح المرشحات</button>
+          </div>
+          <div id="qrPopup" class="qr-popup"></div>
+          <table id="studentsTable">
+            <thead>
+              <tr>
+                <th>الاسم</th>
+                <th>الرقم المسلسل</th>
+                <th>الكلية</th>
+                <th>الرقم القومى</th>
+                <th>qr Code</th>
+                <th>الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Student rows will be inserted here dynamically -->
+            </tbody>
+          </table>
+          <div class="pagination">
+            <button id="prevPage" disabled>السابق</button>
+            <span id="pageInfo">الصفحة 1 من 5</span>
+            <button id="nextPage">التالي</button>
+          </div>
+          <div
+            id="editUserForm"
+            style="
+              display: none;
+              position: absolute;
+              top: 50px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: white;
+              padding: 20px;
+              box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+              padding-left: 37px;
+            "
+          >
+            <h2>تعديل البيانات</h2>
+            <input type="hidden" id="editUserId" />
+            <label>الاسم:</label>
+            <input type="text" id="editName" />
+            <label>الرقم المسلسل:</label>
+            <input type="text" id="editSequence" />
+            <label>الرقم القومى:</label>
+            <input type="text" id="editNationalId" />
+            <button onclick="updateUser()">حفظ</button>
+            <button onclick="closeEditForm()">الغاء</button>
+          </div>
+          <form onsubmit="return false;">
+            <div
+              id="updateImageForm"
+              style="
+                display: none;
+                position: absolute;
+                top: 50px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: white;
+                padding: 20px;
+                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+              "
+            >
+              <h2>تعدديل الصورة</h2>
+              <input type="hidden" id="updateUserId" />
+              <video id="updateCamera" autoplay></video>
+              <canvas id="updatePhotoCanvas"></canvas>
+              <button type="button" onclick="captureUpdatedPhoto()">
+                التقط صورة
+              </button>
+              <button type="button" id="uploadImageButton">تعديل</button>
+              <button type="button" onclick="closeUpdateImageForm()">
+                الغاء
+              </button>
+            </div>
+          </form>
+        </section>
+        <section id="faculty" class="section"></section>
+        <section id="facultyList" class="section">
+          <h2>ادارة الكليات</h2>
+          <form id="facultyForm">
+            <input
+              type="text"
+              placeholder="اسم الكلبة"
+              id="facultyName"
+              required
+            />
+            <button type="submit" id="saveFaculty">حفظ</button>
+          </form>
+          <h2>قائمة الكليات</h2>
+          <table id="facultyTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>الاسم</th>
+                <th>الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Faculty data will be inserted here dynamically -->
+            </tbody>
+          </table>
+        </section>
+        <section id="go" class="section">
+          <div class="toggle-container">
+            <label class="switch">
+              <input type="checkbox" id="toggleAttendance" />
+              <span class="slider"></span>
+            </label>
+            <span id="toggleLabel">حضور</span>
+          </div>
+
+          <h2 id="goSectionTitle">حضور الطلبة</h2>
+          <div class="scanner-container">
+            <!-- QR Scanner Video -->
+            <div class="cont">
+              <video id="qrScanner" autoplay></video>
+            </div>
+            <div class="cont">
+              <div class="user-card">
+                <h3>بيانات الطالب</h3>
+                <div class="user-info">
+                  <img id="userImage" src="" alt="User Image" />
+                  <div class="info-text">
+                    <p><strong>ID:</strong> <span id="userId">-</span></p>
+                    <p><strong>الاسم:</strong> <span id="userName">-</span></p>
+                    <p>
+                      <strong>الرقم القومى : </strong>
+                      <span id="userNationalId">-</span>
+                    </p>
+                    <p>
+                      <strong>الكلية:</strong> <span id="userFaculty">-</span>
+                    </p>
+                    <p><strong>التسلسل:</strong> <span id="userSeq">-</span></p>
+                  </div>
+                </div>
+                <label for="notice">ملاحظات:</label>
+                <textarea
+                  id="notice"
+                  placeholder="ادخل ملاحظاتك ..."
+                  rows="4"
+                ></textarea>
+                <div class="btn-group">
+                  <button disabled id="approveBtn_attend">قبول</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        
+        <section id="bulkUploadSection" class="section">
+          <h3>تحميل ملف اكسل</h3>
+
+          <form id="bulkUploadForm">
+            <!-- File Input -->
+            <label for="filePath">تحميل ملف:</label>
+            <input type="file" id="filePath" />
+            <div class="bulkUploadDropdownsContainer">
+
+              <!-- Gender Selection -->
+            
+              <span id="loadingSpinner" style="display: none;">⏳ Uploading...</span>
+            </div>
+
+            <button type="submit" id =uploadButton>تحميل</button>
+          </form>
+        </section>
+         <section id="reports" class="section" dir="rtl">
+          <h2>إنشاء التقارير</h2>
+          <!-- Arabic heading -->
+
+          <!-- Hidden initially -->
+          <div id="reportControls">
+            <!-- Report Type Selection -->
+            <label for="reportType">اختر التقرير:</label>
+            <select id="reportType"></select>
+
+            <!-- Faculty Selection -->
+            <label for="facultySelect">اختر الكلية:</label>
+            <select id="facultySelect">
+              <option value="">-- اختر الكلية --</option>
+            </select>
+
+            <!-- Date Selection -->
+            <label for="reportDate">اختر التاريخ:</label>
+            <input type="date" id="reportDate" />
+
+            <!-- Generate Button -->
+            <button id="generateReport">إنشاء التقرير</button>
+          </div>
+
+          <!-- Response Display -->
+          <div id="response"></div>
+        </section> <section id="reports" class="section" dir="rtl">
+          <h2>إنشاء التقارير</h2>
+          <!-- Arabic heading -->
+
+          <!-- Hidden initially -->
+          <div id="reportControls">
+            <!-- Report Type Selection -->
+            <label for="reportType">اختر التقرير:</label>
+            <select id="reportType"></select>
+
+            <!-- Faculty Selection -->
+            <label for="facultySelect">اختر الكلية:</label>
+            <select id="facultySelect">
+              <option value="">-- اختر الكلية --</option>
+            </select>
+
+            <!-- Date Selection -->
+            <label for="reportDate">اختر التاريخ:</label>
+            <input type="date" id="reportDate" />
+
+            <!-- Generate Button -->
+            <button id="generateReport">إنشاء التقرير</button>
+          </div>
+
+          <!-- Response Display -->
+          <div id="response"></div>
+        </section> <section id="reports" class="section" dir="rtl">
+          <h2>إنشاء التقارير</h2>
+          <!-- Arabic heading -->
+
+          <!-- Hidden initially -->
+          <div id="reportControls">
+            <!-- Report Type Selection -->
+            <label for="reportType">اختر التقرير:</label>
+            <select id="reportType"></select>
+
+            <!-- Faculty Selection -->
+            <label for="facultySelect">اختر الكلية:</label>
+            <select id="facultySelect">
+              <option value="">-- اختر الكلية --</option>
+            </select>
+
+            <!-- Date Selection -->
+            <label for="reportDate">اختر التاريخ:</label>
+            <input type="date" id="reportDate" />
+
+            <!-- Generate Button -->
+            <button id="generateReport">إنشاء التقرير</button>
+          </div>
+
+          <!-- Response Display -->
+          <div id="response"></div>
+        </section> <section id="reports" class="section" dir="rtl">
+          <h2>إنشاء التقارير</h2>
+          <!-- Arabic heading -->
+
+          <!-- Hidden initially -->
+          <div id="reportControls">
+            <!-- Report Type Selection -->
+            <label for="reportType">اختر التقرير:</label>
+            <select id="reportType"></select>
+
+            <!-- Faculty Selection -->
+            <label for="facultySelect">اختر الكلية:</label>
+            <select id="facultySelect">
+              <option value="">-- اختر الكلية --</option>
+            </select>
+
+            <!-- Date Selection -->
+            <label for="reportDate">اختر التاريخ:</label>
+            <input type="date" id="reportDate" />
+
+            <!-- Generate Button -->
+            <button id="generateReport">إنشاء التقرير</button>
+          </div>
+
+          <!-- Response Display -->
+          <div id="response"></div>
+        </section> <section id="reports" class="section" dir="rtl">
+          <h2>إنشاء التقارير</h2>
+          <!-- Arabic heading -->
+
+          <!-- Hidden initially -->
+          <div id="reportControls">
+            <!-- Report Type Selection -->
+            <label for="reportType">اختر التقرير:</label>
+            <select id="reportType"></select>
+
+            <!-- Faculty Selection -->
+            <label for="facultySelect">اختر الكلية:</label>
+            <select id="facultySelect">
+              <option value="">-- اختر الكلية --</option>
+            </select>
+
+            <!-- Date Selection -->
+            <label for="reportDate">اختر التاريخ:</label>
+            <input type="date" id="reportDate" />
+
+            <!-- Generate Button -->
+            <button id="generateReport">إنشاء التقرير</button>
+          </div>
+
+          <!-- Response Display -->
+          <div id="response"></div>
+        </section>
+      </main>
+      <!-- Confirmation Box -->
+      <div id="confirm-overlay" class="confirm-overlay"></div>
+      <div id="confirm-box" class="confirm-box">
+        <p id="confirm-message">Are you sure?</p>
+        <div class="confirm-box-container">
+          <button class="yes-btn" onclick="confirmAction(true)">Yes</button>
+          <button class="no-btn" onclick="confirmAction(false)">No</button>
+        </div>
+      </div>
+    </div>
+    <div id="notification-box"></div>
+    <script src="scripts/addStudent.js"></script>
+    <script src="scripts/qrScanner.js"></script>
+    <script src="scripts/show_notfication.js"></script>
+    <script src="scripts/confirmMessageBox.js"></script>
+    <script src="scripts/script.js" defer></script>
+    <script src="scripts/studentFilters.js"></script>
+    <script src="scripts/jsQR.js"></script>
+    <script src="scripts/requests.js"></script>
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/reports.js"></script>
+    <script src="scripts/all.min.js"></script>
+  </body>
+</html>

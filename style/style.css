@@ -1,0 +1,946 @@
+.user-card button {
+  max-width: 60%
+}
+
+#editUserForm {
+  width: 30%;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  transform: translateX(-90%)
+}
+
+#btn-group,
+#editUserForm,
+.toggle-container {
+  display: flex;
+  justify-content: center
+}
+
+.toggle-container {
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0
+}
+
+.slider {
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #2ecc71;
+  border-radius: 34px
+}
+
+.slider,
+.slider:before {
+  position: absolute;
+  transition: .4s
+}
+
+.slider:before {
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 4px;
+  bottom: 3px;
+  background-color: #fff;
+  border-radius: 50%
+}
+
+input:checked+.slider {
+  background-color: #dc3545
+}
+
+input:checked+.slider:before {
+  transform: translateX(26px)
+}
+
+.form-container {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, .1)
+}
+
+.input-row {
+  display: flex;
+  gap: 15px;
+  justify-content: space-between;
+  margin-bottom: 15px
+}
+
+.input-group {
+  flex: 1
+}
+
+input,
+select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc
+}
+
+.camera-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 15px
+}
+
+canvas,
+video {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 8px;
+  border: 2px solid #ddd
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px
+}
+
+.btn-primary {
+  background: #28a745
+}
+
+.btn-primary,
+.btn-secondary {
+  color: #fff;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer
+}
+
+.btn-secondary {
+  background: #dc3545
+}
+
+#studentForm .button-group {
+  width: 100%
+}
+
+#studentForm input {
+  max-width: 80%
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  display: flex
+}
+
+.container {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  flex-direction: row-reverse
+}
+
+.sidebar {
+  width: 250px;
+  background: #2c3e50;
+  color: #fff;
+  padding: 20px;
+  display: flex;
+  flex-direction: column
+}
+
+.sidebar h2 {
+  text-align: center
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0
+}
+
+.sidebar ul li {
+  padding: 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  margin: 5px 0;
+  background: #34495e;
+  text-align: center
+}
+
+.sidebar ul li:hover {
+  background: #1abc9c
+}
+
+.sidebar a {
+  color: wheat
+}
+
+.sidebar ul li[data-section=go] {
+  margin-top: 20px
+}
+
+.sidebar ul li[data-section=go],
+.sidebar ul li[data-section=leave] {
+  background-color: #28a745;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center
+}
+
+.sidebar ul li[data-section=leave] {
+  margin-top: 10px
+}
+
+.sidebar ul li[data-section=go]:hover,
+.sidebar ul li[data-section=leave]:hover {
+  opacity: .8;
+  cursor: pointer
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+  background: #ecf0f1;
+  overflow-y: auto
+}
+
+.section {
+  display: none;
+  direction: rtl
+}
+
+.section.active {
+  display: block
+}
+
+form {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+  direction: rtl
+}
+
+button,
+input,
+select {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  max-width: 40%
+}
+
+button {
+  background: #2c3e50;
+  color: #fff
+}
+
+button:hover {
+  background: #34495e
+}
+
+video {
+  width: 36%;
+  height: auto;
+  border-radius: 5px;
+  margin-bottom: 10px
+}
+
+#studentsList {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, .1);
+  direction: rtl
+}
+
+#studentsList h2 {
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 22px
+}
+
+#studentsTable {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden
+}
+
+#studentsTable td,
+#studentsTable th {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #ddd
+}
+
+#studentsTable th {
+  background-color: #2c3e50;
+  color: #fff;
+  text-transform: uppercase
+}
+
+#studentsTable tr:nth-child(2n) {
+  background-color: #f2f2f2
+}
+
+#studentsTable tr:hover {
+  background-color: #ddd
+}
+
+#facultyList {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, .1);
+  direction: rtl
+}
+
+#facultyList h2 {
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 22px
+}
+
+#facultyTable {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden
+}
+
+#facultyTable td,
+#facultyTable th {
+  padding: 12px;
+  text-align: right;
+  border-bottom: 1px solid #ddd
+}
+
+#facultyTable th {
+  background-color: #2c3e50;
+  color: #fff;
+  text-transform: uppercase
+}
+
+#facultyTable tr:nth-child(2n) {
+  background-color: #f2f2f2
+}
+
+#facultyTable tr:hover {
+  background-color: #ddd
+}
+
+button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px
+}
+
+button:hover {
+  opacity: .8
+}
+
+.scanner-container {
+  align-items: flex-start
+}
+
+.camera-box {
+  flex: 1
+}
+
+.user-card {
+  flex: 1;
+  max-width: 300px;
+  background: #f9f9f9
+}
+
+.user-card button {
+  display: block;
+  width: 100%;
+  margin-top: 10px
+}
+
+.scanner-container {
+  display: flex;
+  align-items: center;
+  gap: 20px
+}
+
+#qrScanner {
+  width: 300px;
+  height: 200px;
+  border: 2px solid #000
+}
+
+.user-card {
+  width: 250px;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: #f8f9fa;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, .2)
+}
+
+.user-card h3 {
+  text-align: center;
+  margin-bottom: 10px
+}
+
+.user-card p {
+  margin: 5px 0
+}
+
+button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px;
+  cursor: pointer
+}
+
+.gender-selection {
+  margin: 15px 0;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  flex-direction: row-reverse
+}
+
+.gender-label {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 8px;
+  cursor: pointer
+}
+
+.gender-label input {
+  display: none
+}
+
+.custom-radio {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #333;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  margin-right: 8px
+}
+
+.gender-label input:checked+.custom-radio {
+  background-color: #007bff;
+  border-color: #007bff
+}
+
+.gender-label input:checked+.custom-radio:after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%)
+}
+
+.sidebar label {
+  display: flex;
+  justify-content: center;
+  align-items: center
+}
+
+.sidebar label input {
+  width: 20px
+}
+
+#go .scanner-container {
+  display: flex;
+  gap: 10px;
+  justify-content: space-around;
+  align-items: flex-start
+}
+
+#go video {
+  width: 100% !important;
+  height: auto !important;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  max-width: 500px;
+}
+
+#go .user-card {
+  flex: 1;
+  width: 600px;
+  max-width: 1000px;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, .2)
+}
+
+#go input {
+  width: 96%
+}
+
+#go textarea {
+  display: block;
+  width: 90%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc
+}
+
+#go #userImage,
+#leave #userImageLeave {
+  width: 50%
+}
+
+#leave .scanner-container {
+  display: flex;
+  gap: 10px;
+  justify-content: space-around;
+  align-items: flex-start
+}
+
+#leave .user-card {
+  flex: 1;
+  width: 600px;
+  max-width: 1000px;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, .2)
+}
+
+#leave input {
+  width: 96%
+}
+
+#leave video {
+  width: 77%;
+  height: auto;
+  border-radius: 5px;
+  margin-bottom: 10px
+}
+
+#leave textarea {
+  display: block;
+  width: 90%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc
+}
+
+#facultySelect,
+#reportDate,
+#reportType {
+  max-width: 50%
+}
+
+#reportControls {
+  display: flex;
+  align-content: space-between;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center
+}
+
+#updatePhotoCanvas {
+  width: 38%
+}
+
+.addStudentcontainder {
+  display: flex;
+  align-content: center;
+  justify-content: space-around
+}
+
+.addStudentcontainder button {
+  width: 30%
+}
+
+.edit-btn {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 8px 15px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: .3s
+}
+
+.icon-btn i {
+  font-size: 18px;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  text-align: center
+}
+
+.edit-btn:hover {
+  background-color: #0056b3
+}
+
+.icon-btn {
+  background: #34495e;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  margin: 5px;
+  padding: 8px;
+  transition: .3s;
+  max-width: 20%
+}
+
+.icon-btn:hover {
+  transform: scale(1.2)
+}
+
+.controlStudentControllsContainer {
+  display: flex;
+  justify-content: center
+}
+
+.qr-checkbox {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  margin: auto
+}
+
+.qr-checkbox:checked:disabled {
+  background-color: #4caf50;
+  border-color: #4caf50
+}
+
+.qr-checkbox:checked:disabled:after {
+  content: "✔";
+  font-size: 12px;
+  color: #fff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%)
+}
+
+.addStudentcontainder button {
+  background-color: #2ecc71
+}
+
+.filters {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
+  margin-bottom: 20px
+}
+
+.filter-input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color .3s ease
+}
+
+.filter-input:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 5px rgba(52, 152, 219, .5)
+}
+
+.clear-filters-button {
+  padding: 10px 20px;
+  background-color: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color .3s ease
+}
+
+.clear-filters-button:hover {
+  background-color: #c0392b
+}
+
+@media (max-width:768px) {
+  .filters {
+    flex-direction: column
+  }
+
+  .clear-filters-button,
+  .filter-input {
+    width: 100%
+  }
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px
+}
+
+.pagination button {
+  padding: 8px 16px;
+  background-color: #2c3e50;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color .3s ease;
+  width: 20%
+}
+
+.pagination button:hover {
+  background-color: #34495e
+}
+
+.pagination button:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed
+}
+
+#pageInfo {
+  font-size: 14px;
+  color: #2c3e50
+}
+
+#facultyForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center
+}
+
+.confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, .3);
+  display: none;
+  z-index: 999
+}
+
+.confirm-box {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+  text-align: center;
+  display: none;
+  z-index: 1000;
+  width: 300px
+}
+
+.confirm-box button {
+  margin: 10px;
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px
+}
+
+.yes-btn {
+  background: green;
+  color: #fff
+}
+
+.no-btn {
+  background: red;
+  color: #fff
+}
+
+.confirm-box-container {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  align-items: center
+}
+
+#resetButton {
+  margin-top: 50%;
+  background-color: red
+}
+
+#notification-box {
+  position: fixed;
+  top: 20px;
+  right: -300px;
+  padding: 15px 25px;
+  border-radius: 5px;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, .1);
+  transition: right .5s ease-in-out;
+  z-index: 1000
+}
+
+.success {
+  background-color: #4caf50
+}
+
+.failure {
+  background-color: #f44336
+}
+
+@keyframes slideIn {
+  0% {
+    right: -300px
+  }
+
+  to {
+    right: 20px
+  }
+}
+
+@keyframes slideOut {
+  0% {
+    right: 20px
+  }
+
+  to {
+    right: -300px
+  }
+}
+
+#editUserForm input {
+  max-width: 100%
+}
+
+#qrImg {
+  width: 45px
+}
+
+.qr-popup {
+  display: none;
+  position: absolute;
+  top: 80px !important;
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, .2);
+  z-index: 1000;
+  text-align: center;
+  width: 500px
+}
+
+.popup-image {
+  width: 100px !important;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 8px
+}
+
+.popup-qr {
+  width: 320px;
+  height: 320px
+}
+
+.receive-btn {
+  background: #4caf50;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 8px;
+  border-radius: 4px
+}
+
+.receive-btn:hover {
+  background: #45a049
+}
+
+#loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, .7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: #fff;
+  font-size: 18px;
+  z-index: 1000
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #fff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg)
+  }
+
+  to {
+    transform: rotate(1turn)
+  }
+}
