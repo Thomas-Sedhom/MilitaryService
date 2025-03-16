@@ -1,7 +1,6 @@
 // Utility Functions
 let currentEndpoint = "entrance";
 const approveBtn = document.getElementById("approveBtn_attend");
-console.log(approveBtn);
 const initializeCamera = async (videoElement, facingMode = "environment") => {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -92,7 +91,7 @@ const approveStudent = async (userId, method = "POST") => {
       throw new Error(result.detail)
     }
   } catch (error) {
-    alert(error.message);
+    showNotification(false,error.message);
   }
 };
 const approveLeave = async (userId, notes, endpoint, method = "POST") => {
@@ -110,7 +109,7 @@ const approveLeave = async (userId, notes, endpoint, method = "POST") => {
       throw new Error(result.detail)
     }
     } catch (error) {
-    alert(error.message);
+    showNotification(false,error.message);
   }
 };
 // QR Code Scanner
@@ -121,13 +120,11 @@ const processQRCode = async (qrCodeData, callback) => {
   if (currentTime - lastScanTime < 1000) return; // Prevent duplicate scans
 
   lastScanTime = currentTime;
-  console.log("QR Code Data:", qrCodeData);
 
   const userId = qrCodeData.split(".")[1]; // Extract user ID
   if (userId) {
     try {
       const user = await fetchUserData(userId); // Fetch user data from API
-      console.log("Fetched User:", user);
 
       if (user) {
         callback(user); // Pass the user data to the callback function
@@ -231,5 +228,4 @@ document
       title.innerText = "حضور الطلبة";
       currentEndpoint = "entrance";
     }
-    console.log(currentEndpoint);
   });

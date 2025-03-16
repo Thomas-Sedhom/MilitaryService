@@ -3,27 +3,32 @@ let filteredStudents = []; // Store filtered students
 const itemsPerPage = 4; // Number of items per page
 let currentPage = 1; // Track the current page
 
+
+document.querySelectorAll('input[name="startedgender"]').forEach((radio) => {
+  radio.addEventListener("change",async function () {
+    await fetchAllStudents();
+  });
+});
 document.querySelector('li[data-section="studentsList"]').addEventListener("click", function () {
   fetchAllStudents();
+  filterStudents();
+
 });
 // Fetch all students from the API
 async function fetchAllStudents() {
   const response = await fetch("http://127.0.0.1:8000/students/");
-  console.log(response);
 
   if (!response.ok) {
-    alert("فشل في جلب البيانات. الرجاء المحاولة مرة أخرى.");
+   showNotification(false,"فشل في جلب البيانات. الرجاء المحاولة مرة أخرى.");
     throw new Error(`HTTP error! Status: ${response.status}`);
   }
 
   // Convert genderValue to a number
   let genderValue = localStorage.getItem("selectedGender" || '1'); 
 
-  console.log("gender", genderValue, genderValue === 1, localStorage.getItem("selectedGender"));
 
   let data = await response.json();
   data = data.filter((student) => student.is_male == (genderValue === '1'));
-  console.log(data);
 
   allStudents = data;
   filteredStudents = data;
@@ -81,12 +86,9 @@ function populateStudentsTable(students) {
   // Calculate the start and end index for the current page
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  console.log(students);
-  console.log(startIndex, endIndex);
   const paginatedStudents = students.filter((_, index) => index >= startIndex && index < endIndex);
 
   paginatedStudents.forEach((student) => {
-    console.log(student.qrCode_path)
     const row = document.createElement("tr");
     row.innerHTML = `
             <td>${student.name}</td>
@@ -97,10 +99,10 @@ function populateStudentsTable(students) {
             <img 
               id="qrImg"
                     class="qr-img"
-                    src="../attendance_system-master/${student.qrCode_path}" 
+                    src="http://localhost:8000/${student.qrCode_path}" 
                     data-name="${student.name}"
-                    data-image="../attendance_system-master/${student.photo}" 
-                    data-qr="../attendance_system-master/${student.qrCode_path}"
+                    data-image="http://localhost:8000/${student.photo}" 
+                    data-qr="http://localhost:8000/${student.qrCode_path}"
                     data-received="${student.qr_received}"
                     data-id="${student.id}"
                     onmouseover="showQrPopup(event)"
@@ -147,7 +149,7 @@ function showQrPopup(event) {
         <img class="popup-image" src="${userImage}" alt="User Image">
         <h3>${userName}</h3>
         <img class="popup-qr" src="${qrSrc}" alt="QR Code">
-        <p>Status: <strong>${received ? "✅ Received" : "❌ Not Received"}</strong></p>
+        <p><strong>${received ? "✅تم الاستلام " : "❌ لم يتم الاستلام"}</strong></p>
         ${
           !received
             ? `<button class="receive-btn" onclick="updateUserQrReceivedStatus(${studentId})">وضع علامة كمستلم</button>`
@@ -194,15 +196,14 @@ async function updateUserQrReceivedStatus(studentId) {
 
   if (!response.ok){
     console.error("Error updating user:", response);
-    alert("Failed to update user. Please try again.");
+   showNotification(false,"Failed to update user. Please try again.");
     throw new Error(`Failed to update user. Status: ${response.status}`);
 
   }
 
   const res = await response.json();
-  console.log("Updated User:", res);
-
-  alert("تم تحديث الطالب بنجاح!");
+  fetchAllStudents();
+  showNotification(true,"تم تحديث الطالب بنجاح!");
 
 }
 function markAsReceived(studentId) {
@@ -220,7 +221,7 @@ function markAsReceived(studentId) {
       return response.json();
     })
     .then((data) => {
-      alert(`Student ${data.name} has received the QR!`);
+      showNotification(true,`Student ${data.name} has received the QR!`);
       hideQrPopup(); // Hide popup
       location.reload(); // Reload to update the UI
     })
@@ -285,11 +286,11 @@ fetchAllStudents();
 
 let lastGender = localStorage.getItem("selectedGender");
 
-setInterval(() => {
+setInterval(async () => {
   const currentGender = localStorage.getItem("selectedGender");
   if (currentGender !== lastGender) {
-    console.log("Gender changed:", currentGender);
     lastGender = currentGender;
-    fetchAllStudents(); // Re-fetch data
+    await fetchAllStudents(); 
+    filterStudents();
   }
 }, 500)

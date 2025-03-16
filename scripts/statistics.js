@@ -24,19 +24,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         const student = await response.json(); // Convert response to JSON
-        console.log(student)
 
         // Populate the student card with fetched data
-        document.getElementById("studentId").textContent = student.student.id || "N/A";
+        // document.getElementById("studentId").textContent = student.student.id || "N/A";
         document.getElementById("studentName").textContent = student.student.name || "N/A";
+        document.getElementById("national_id").textContent = student.student.national_id || "N/A";
+
         document.getElementById("studentFaculty").textContent = student.student.faculty_name || "N/A";
         document.getElementById("attended_days").textContent = student.student.attended_days;
         document.getElementById("seqNum").textContent = student.student.seq_number;
 
         // Set the student image if available
+        console.log(student.student.photo)
         const studentImage = document.getElementById("studentImage");
         if (student.student.photo) {
-            studentImage.src = `attendance_system-master/${student.student.photo}`;
+            studentImage.src = `http://localhost:8000/${student.student.photo}`;
         } else {
             studentImage.src = "default-avatar.png"; // Set a default image if none exists
         }
@@ -87,7 +89,6 @@ async function generateAttendanceTable() {
         const tableBody = document.getElementById("attendanceTableBody");
     tableBody.innerHTML = "";
 
-    console.log(response)
     student.student.attendance_records.forEach((record, index) => {
         const row = document.createElement("tr");
 

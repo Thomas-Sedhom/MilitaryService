@@ -51,7 +51,6 @@ document.addEventListener("DOMContentLoaded", function () {
     radio.addEventListener("change", function () {
       selectedGender = this.value; // Store selected gender
       localStorage.setItem("selectedGender", selectedGender); // Save to localStorage
-      console.log("Selected Gender:", selectedGender); // Debugging
       fetchFaculties()
     });
   });
@@ -138,11 +137,10 @@ document
       location.reload();
     } catch (error) {
       console.error("Error:", error);
-      alert("فشل في حفظ الكلية");
+      showNotification(false,"فشل في حفظ الكلية");
     }
   });
 
-// fetchStudents(); // Fetch students when the page loads
 
 document.addEventListener("DOMContentLoaded", function () {
   const sections = document.querySelectorAll(".section");
@@ -270,15 +268,17 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     try {
       const go_next = await showConfirmBox(
-        "هل انت متأكد من انك تريد حذف الكلية ؟"
+       "هل أنت متأكد من أنك تريد حذف الكلية؟ سيتم أيضًا حذف جميع الطلاب التابعين لها وسجلات الحضور الخاصة بهم."
       );
       if (!go_next) return;
       const response = await fetch(`http://127.0.0.1:8000/faculties/${id}`, {
         method: "DELETE",
       });
-
       if (response.ok) {
         faculties = faculties.filter((faculty) => faculty.id !== id);
+        // location.reload()
+        showNotification(true,"تم حذف الكلية بنجاح .")
+        await fetchFaculties()
         updateFacultyTable(); // Refresh table dynamically
       } else {
         console.error("Failed to delete faculty.");
@@ -297,7 +297,7 @@ function redirectToStatisticsPage(studentId) {
 
 // Function to delete a student
 async function deleteStudent(studentId) {
-  if (!confirm("هل انت متأكد من انك تريد ان تحذف الطالب ؟?")) return;
+  if (!await showConfirmBox("هل انت متأكد من انك تريد ان تحذف الطالب ؟?")) return;
 
   try {
     const response = await fetch(
@@ -311,8 +311,8 @@ async function deleteStudent(studentId) {
       throw new Error("Failed to delete student");
     }
 
-    alert("تم حذف الطالب بنجاح!");
-    await fetchStudents(); // Refresh the student list
+    showNotification(true,"تم حذف الطالب بنجاح!");
+    await fetchAllStudents();
   } catch (error) {
     console.error("Error deleting student:", error);
   }
@@ -326,7 +326,6 @@ function showEditForm(userId) {
   fetch(`http://127.0.0.1:8000/students/${userId}`)
     .then((response) => response.json())
     .then((data) => {
-      // console.log("data", data.student.name)
       document.getElementById("editUserId").value = data.student.id;
       document.getElementById("editName").value = data.student.name;
       document.getElementById("editSequence").value = data.student.seq_number;
@@ -389,7 +388,6 @@ document
   .addEventListener("click", uploadUpdatedImage);
 
 async function uploadUpdatedImage(event) {
-  console.log(event);
   event.preventDefault(); // Prevent form submission and page refresh
 
   try {
@@ -398,7 +396,7 @@ async function uploadUpdatedImage(event) {
     const photoBase64 = canvas.toDataURL("image/png");
 
     if (!photoBase64) {
-      alert("قم بألتقاط الصورة اولا.");
+      showNotification(false,"قم بألتقاط الصورة اولا.");
       return;
     }
 
@@ -415,15 +413,14 @@ async function uploadUpdatedImage(event) {
       }
     );
 
-    console.log(response);
 
     if (response.status != 200)
       throw new Error(`Failed to upload image. Status: ${response.status}`);
 
-    alert("تم تحميل الصورة بنجاح!");
+    showNotification(true,"تم تحميل الصورة بنجاح!");
   } catch (error) {
     console.error("Error updating image:", error);
-    alert("فشل في تحميل الصورة برجاء المحاولة مرة اخري.");
+    showNotification(false,"فشل في تحميل الصورة برجاء المحاولة مرة اخري.");
   }
 }
 
@@ -448,15 +445,14 @@ async function updateUser() {
 
     if (!response.ok){
       console.error("Error updating user:", error);
-      alert("فشل في تحديث الطالب برجاء المحاولة مرة اخري.");
+      showNotification(false,"فشل في تحديث الطالب برجاء المحاولة مرة اخري.");
       throw new Error(`Failed to update user. Status: ${response.status}`);
 
     }
 
     const res = await response.json();
-    console.log("Updated User:", res);
 
-    alert("تم تحديث الطالب بنجاح!");
+    showNotification(true,"تم تحديث الطالب بنجاح!");
     closeEditForm();
 
 }
@@ -482,7 +478,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let file = filePathInput.files[0]; // Get the selected file
   
     if (!file || !selectedGender) {
-      alert("الرجاء ملئ جميع البيانات اولا.");
+      showNotification(false,"الرجاء ملئ جميع البيانات اولا.");
       return;
     }
   
@@ -491,11 +487,10 @@ document.addEventListener("DOMContentLoaded", () => {
     formData.append("file", file);
     formData.append("is_male", isMale);
   
-    console.log("Uploading file:", file.name, "Gender:", isMale);
   
       // Show loading indicator & disable button
       submitButton.disabled = true;
-      submitButton.innerText = "Uploading...";
+      submitButton.innerText = "جارى التحميل ";
       loadingIndicator.style.display = "inline-block";
   
       const response = await fetch("http://127.0.0.1:8000/students/bulk-upload", {
@@ -503,46 +498,98 @@ document.addEventListener("DOMContentLoaded", () => {
         body: formData,
       });
   
-      console.log(response)
       if (response.ok) {
-        alert("تم تحميل الملف بنجاح!");
+        showNotification(true,"تم تحميل الملف بنجاح!");
         document.getElementById("bulkUploadForm").reset();
       } else {
         const errorData = await response.json();
-        alert("فشل الرفع: " + JSON.stringify(errorData));
+        showNotification(false,"فشل الرفع: " + JSON.stringify(errorData));
       }
       submitButton.disabled = false;
-      submitButton.innerText = "Upload";
+      submitButton.innerText = "تحميل";
       loadingIndicator.style.display = "none";
   });
   
 });
-document.getElementById("resetButton").addEventListener("click", async function (event) {
-  event.preventDefault();
-  
-  const confirmReset = await showConfirmBox("هل انت متأكد من انك تريد حذف كل البيانات ؟");
 
-  if (confirmReset) {
-    const isMale = selectedGender === '1';
-    
-    // Show loading indicator
-    document.getElementById("resetButton").innerText = "جارٍ الحذف...";
 
-      const response = await fetch(`http://127.0.0.1:8000/metadata/reset?is_male=${isMale}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      });
+  document.getElementById("resetButton").addEventListener("click", async function (event) {
+    event.preventDefault();
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+    const confirmReset = await showConfirmBox("هل انت متأكد من انك تريد حذف كل البيانات ؟");
+
+    if (confirmReset) {
+      const isMale = selectedGender === "1";
+
+      // Disable button and show loading indicator
+      document.getElementById("resetButton").innerText = "جارٍ الحذف...";
+      document.getElementById("resetButton").disabled = true;
+
+      // Create and show loading screen
+      const loadingScreen = document.createElement("div");
+      loadingScreen.id = "loadingScreen";
+      loadingScreen.innerHTML = `
+        <div class="loading-overlay">
+          <div class="loading-spinner"></div>
+          <p>جاري المعالجة، يرجى الانتظار...</p>
+        </div>
+      `;
+      document.body.appendChild(loadingScreen);
+
+      // CSS for loading screen
+      const style = document.createElement("style");
+      style.innerHTML = `
+        .loading-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.7);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+          color: white;
+          font-size: 18px;
+        }
+        .loading-spinner {
+          width: 50px;
+          height: 50px;
+          border: 5px solid white;
+          border-top: 5px solid transparent;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `;
+      document.head.appendChild(style);
+
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/metadata/reset?is_male=${isMale}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        showNotification(true, "تم حذف جميع البيانات بنجاح .");
+
+      } catch (error) {
+        showNotification(false, "حدث خطأ أثناء حذف البيانات.");
+      } finally {
+        // Remove loading screen and re-enable button
+        document.getElementById("resetButton").innerText = "مسح جميع البيانات";
+        document.getElementById("resetButton").disabled = false;
+        document.getElementById("loadingScreen").remove();
       }
-
-      showNotification(true, "تم حذف جميع البيانات بنجاح .");
-      document.getElementById("resetButton").innerText = 'مسح جميع البيانات'
-
-  }
-});
-
+    }
+  });

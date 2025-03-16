@@ -1,102 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Attendance Statistics</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
-        }
-
-        h2 {
-            text-align: center;
-        }
-
-        /* Student Card Styling */
-        .student-card {
-            background: white;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-            max-width: 600px;
-            margin: auto;
-            margin-bottom: 20px;
-        }
-
-        .student-card img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .student-info {
-            line-height: 1.6;
-        }
-
-        /* Table Styling */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
-
-        th {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .attendance-checkbox {
-            width: 18px;
-            height: 18px;
-        }
-    </style>
+    <title>إحصائيات حضور الطلاب</title>
+    <link rel="stylesheet" href="style/statistics.css">
 </head>
 <body>
 
-    <h2>Student Attendance Statistics</h2>
+    <h2>إحصائيات حضور الطلاب</h2>
 
-    <!-- Student Card -->
+    <!-- بطاقة الطالب -->
     <div class="student-card" id="studentCard">
-        <img id="studentImage" src="" alt="Student Image">
+        <img id="studentImage" src="" alt="صورة الطالب">
         <div class="student-info">
-            <p><strong>ID:</strong> <span id="studentId"></span></p>
-            <p><strong>Name:</strong> <span id="studentName"></span></p>
-            <p><strong>Faculty:</strong> <span id="studentFaculty"></span></p>
-            <p><strong>sequence number:</strong> <span id="seqNum"></span></p>
-            <p><strong>attended_days:</strong> <span id="attended_days"></span></p>
+            <p><strong>الاسم:</strong> <span id="studentName"></span></p>
+            <p><strong>الكلية:</strong> <span id="studentFaculty"></span></p>
+            <p><strong>الرقم التسلسلي:</strong> <span id="seqNum"></span></p>
+            <p><strong>الرقم القومي:</strong> <span id="national_id"></span></p>
+            <p><strong>أيام الحضور:</strong> <span id="attended_days"></span></p>
         </div>
     </div>
 
-    <!-- Attendance Table -->
+    <!-- جدول الحضور -->
     <table>
         <thead>
             <tr>
-                <th>Day</th>
-                <th>Attendance Time</th>
-                <th>Go Time</th>
+                <th>اليوم</th>
+                <th>وقت الحضور</th>
+                <th>وقت الانصراف</th>
             </tr>
         </thead>
         <tbody id="attendanceTableBody">
-            <!-- Data will be inserted dynamically -->
+            <!-- سيتم إدراج البيانات ديناميكيًا -->
         </tbody>
     </table>
-    <script src="./scripts/statistics.js"></script>
 
+    <script src="./scripts/statistics.js"></script>
 </body>
 </html>

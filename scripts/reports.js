@@ -58,17 +58,16 @@ document.addEventListener("DOMContentLoaded", async function () {
       'input[name="startedgender"]:checked'
     );
     const gender = genderInput ? genderInput.value === "1" : null;
-    console.log(gender)
     if (reporttype === "0") {
       if (!reportdate) {
-        alert("الرجاء اختيار التاريخ لتقرير اليومي.");
+        showNotification(false,"الرجاء اختيار التاريخ لتقرير اليومي.");
         return;
       }
 
       await fetchDayReport(reportdate, gender);
     } else if (reporttype === "1") {
       if (!faculty) {
-        alert("الرجاء اختيار الكلية والنوع لتقرير الكلية.");
+        showNotification(false,"الرجاء اختيار الكلية والنوع لتقرير الكلية.");
         return;
       }
       await fetchFacultyReport(faculty, gender,reportdate);
@@ -76,8 +75,15 @@ document.addEventListener("DOMContentLoaded", async function () {
       await downloadGeneralReport(gender,reportdate);
     }
 
-    console.log("Generate button clicked");
   });
   // Add event listener to toggle inputs when selection changes
   reportTypeSelect.addEventListener("change", toggleInputs);
+});
+document.querySelectorAll('input[name="startedgender"]').forEach((radio) => {
+  radio.addEventListener("change",async function () {
+    // console.log("dfasdfas")
+    facultyOptions = await loadFaculties( this.value); 
+location.reload();
+
+  });
 });

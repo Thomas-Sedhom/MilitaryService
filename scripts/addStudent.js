@@ -70,9 +70,9 @@ document
         // Hide the captured image
         photoCanvas.style.display = "none";
     } else {
-        alert(res.detail || "حدث خطأ أثناء حفظ الطالب.");
+        showNotification(false, "حدث خطأ أثناء حفظ الطالب.");
         console.error("Request failed:", error);
-        alert("فشل الاتصال بالخادم.");
+        showNotification(false,"فشل الاتصال بالخادم.");
     }
 
 });

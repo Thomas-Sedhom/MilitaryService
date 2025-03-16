@@ -1,12 +1,22 @@
-async function loadFaculties() {
+async function loadFaculties(gender) {
     try {
-        const response = await fetch("http://127.0.0.1:8000/faculties/", {
+        
+        if (gender==null){
+            const currentGender = localStorage.getItem("selectedGender");
+            if(currentGender == null){
+                gender = 1
+            }else{
+                gender = currentGender;
+            }
+        }
+        console.log(gender)
+        sentGender = gender?"true":"false"
+        const response = await fetch(`http://127.0.0.1:8000/faculties/?is_male=${gender}`, {
             method: "GET",
             headers: { "Accept": "application/json" }
         });
 
         if (!response.ok) {
-            console.log("Error loading faculties");
             return [];
         }
 
@@ -59,7 +69,7 @@ async function fetchFacultyReport(facultyId, isMale,date) {
     } catch (error) {
         // Handle any errors
         console.error("Error fetching faculty report:", error);
-        alert("فشل في جلب تقرير الكلية. الرجاء المحاولة مرة أخرى.");
+       showNotification(false,"فشل في جلب تقرير الكلية. الرجاء المحاولة مرة أخرى.");
     }
 }
 
@@ -88,7 +98,6 @@ async function downloadGeneralReport(isMale,day) {
         document.body.removeChild(a);
         window.URL.revokeObjectURL(downloadUrl);
         
-        console.log("Report downloaded successfully!");
     } catch (error) {
         console.error("Error downloading the report:", error);
     }
@@ -132,7 +141,7 @@ async function fetchDayReport(day, isMale) {
     } catch (error) {
         // Handle any errors
         console.error("Error fetching day report:", error);
-        alert("فشل في جلب تقرير اليوم. الرجاء المحاولة مرة أخرى.");
+       showNotification(false,"فشل في جلب تقرير اليوم. الرجاء المحاولة مرة أخرى.");
     }
 }
 async function fetchQRCodeReport(isMale) {
@@ -147,7 +156,6 @@ async function fetchQRCodeReport(isMale) {
             }
         });
 
-        console.log(response);
 
         // Check if the response is OK (status code 200-299)
         if (!response.ok) {
@@ -156,7 +164,6 @@ async function fetchQRCodeReport(isMale) {
 
         // Convert response to a Blob
         const blob = await response.blob();
-        console.log(blob);
 
         // Set static filename
         const filename = "QrCodes.pdf";
@@ -173,6 +180,6 @@ async function fetchQRCodeReport(isMale) {
         URL.revokeObjectURL(link.href);
     } catch (error) {
         console.error("Error fetching QR code report:", error);
-        alert("فشل في جلب تقرير QR code. الرجاء المحاولة مرة أخرى.");
+        showNotification(false,"فشل في جلب تقرير QR code. الرجاء المحاولة مرة أخرى.");
     }
 }
